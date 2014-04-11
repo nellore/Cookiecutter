@@ -30,8 +30,7 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
         }
     }
     kmers_f.close();
-
-    patterns.push_back(std::make_pair("N", Node::Type::n));
+    patterns.push_back(std::make_pair("NNNNN", Node::Type::n));
     if (polyG) {
         patterns.push_back(std::make_pair(std::string(polyG, 'G'), Node::Type::polyG));
         patterns.push_back(std::make_pair(std::string(polyG, 'C'), Node::Type::polyC));
