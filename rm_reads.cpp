@@ -75,7 +75,7 @@ ReadType check_read(std::string const & read, Node * root, std::vector <std::pai
     if (dust_cutoff && get_dust_score(read, dust_k) > dust_cutoff) {
         return ReadType::dust;
     }
-
+    
     if (errors) {
         return (ReadType)search_inexact(read, root, patterns, errors);
     } else {
@@ -157,7 +157,7 @@ std::string basename(std::string const & path)
 
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --adapters adapters.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
+    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
 }
 
 int main(int argc, char ** argv)
@@ -177,7 +177,7 @@ int main(int argc, char ** argv)
     const struct option long_options[] = {
         {"length",required_argument,NULL,'l'},
         {"polyG",required_argument,NULL,'p'},
-        {"adapters",required_argument,NULL,'a'},
+        {"fragments",required_argument,NULL,'a'},
         {"dust_k",required_argument,NULL,'k'},
         {"dust_cutoff",required_argument,NULL,'c'},
         {"errors",required_argument,NULL,'e'},
