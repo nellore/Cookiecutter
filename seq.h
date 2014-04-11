@@ -44,7 +44,7 @@ public:
 
     void update_id(ReadType type)
     {
-        id.insert(1, get_type_name(type) + "__");
+        id.append(":"+get_type_name(type));
     }
 
     std::string id;
