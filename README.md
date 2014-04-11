@@ -1,2 +1,1 @@
-rm_reads
-========
+# Cookiecutter: a tool for reads filtering
