@@ -45,12 +45,18 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & bad_f,
                          Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
     Seq read;
+    int processed = 0;
 
     while (read.read_seq(reads_f)) {
         ReadType type = check_read(read.seq, root, patterns, errors);
         stats.update(type);
         if (type != ReadType::ok) {
             read.write_seq(bad_f);
+        }
+
+        processed += 1;
+        if (processed % 1000000 == 0) {
+            std::cout << "Processed: " << processed << std::endl;
         }
     }
 }
@@ -64,6 +70,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 {
     Seq read1;
     Seq read2;
+    int processed = 0;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
         ReadType type1 = check_read(read1.seq, root, patterns, errors);
@@ -83,6 +90,11 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
                 read1.write_seq(bad1_f);
                 read2.write_seq(bad2_f);
             }
+        }
+
+        processed += 1;
+        if (processed % 1000000 == 0) {
+            std::cout << "Processed: " << processed << std::endl;
         }
     }
 }
@@ -115,7 +127,6 @@ int main(int argc, char ** argv)
     std::string reads1, reads2;
     char rez = 0;
     int errors = 0;
-
     const struct option long_options[] = {
         {"fragments",required_argument,NULL,'a'},
         {NULL,0,NULL,0}
@@ -178,6 +189,8 @@ int main(int argc, char ** argv)
     build_trie(root, patterns, errors);
 	add_failures(root);
 
+
+    std::cout << "Iterate reads..." << std::endl;
     if (!reads.empty()) {
         std::string reads_base = basename(reads);
         std::ifstream reads_f (reads.c_str());
