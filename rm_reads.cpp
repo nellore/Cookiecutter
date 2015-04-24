@@ -245,7 +245,7 @@ int main(int argc, char ** argv)
 
     build_patterns(kmers_f, polyG, patterns);
 
-/*
+    /*
     for (std::vector <std::string> ::iterator it = patterns.begin(); it != patterns.end(); ++it) {
         std::cout << *it << std::endl;
     }
@@ -256,6 +256,7 @@ int main(int argc, char ** argv)
         return -1;
     }
 
+    std::cout << "Building trie..." << std::endl;
     build_trie(root, patterns, errors);
 	add_failures(root);
 
