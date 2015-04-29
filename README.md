@@ -42,4 +42,5 @@ input_prefix.se.fastq       for paired reads only. File with correct reads which
 Project page
 --------------------
 
+Previous version of project can be found at https://github.com/allivi/rm_reads
 Last version of project can be found at https://github.com/ad3002/Cookiecutter
