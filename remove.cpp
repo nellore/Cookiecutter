@@ -87,15 +87,18 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f,
                          int length, int dust_k, int dust_cutoff, int errors)
 {
     Seq read;
+    int processed = 0;
 
     while (read.read_seq(reads_f)) {
         ReadType type = check_read(read.seq, root, patterns, length, dust_k, dust_cutoff, errors);
         stats.update(type);
         if (type == ReadType::ok) {
             read.write_seq(ok_f);
-        } else {
-            // read.update_id(type);
-            // read.write_seq(bad_f);
+        }
+
+        processed += 1;
+        if (processed % 1000000 == 0) {
+            std::cout << "Processed: " << processed << std::endl;
         }
     }
 }
@@ -108,6 +111,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 {
     Seq read1;
     Seq read2;
+    int processed = 0;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
         ReadType type1 = check_read(read1.seq, root, patterns, length, dust_k, dust_cutoff, errors);
@@ -120,20 +124,11 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
         } else {
             stats1.update(type1, false);
             stats2.update(type2, false);
-            // if (type1 == ReadType::ok) {
-            //     read1.write_seq(se1_f);
-            //     read2.update_id(type2);
-            //     read2.write_seq(bad2_f);
-            // } else if (type2 == ReadType::ok) { 
-            //     read1.update_id(type1);
-            //     read1.write_seq(bad1_f);
-            //     read2.write_seq(se2_f);
-            // } else {
-            //     read1.update_id(type1);
-            //     read2.update_id(type2);
-            //     read1.write_seq(bad1_f);
-            //     read2.write_seq(bad2_f);
-            // }
+        }
+
+        processed += 1;
+        if (processed % 1000000 == 0) {
+            std::cout << "Processed: " << processed << std::endl;
         }
     }
 }

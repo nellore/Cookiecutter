@@ -115,7 +115,7 @@ std::string basename(std::string const & path)
 
 void print_help() 
 {
-    std::cout << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
+    std::cout << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e errors" << std::endl;
 }
 
 int main(int argc, char ** argv)
