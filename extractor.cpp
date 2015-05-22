@@ -221,14 +221,27 @@ int main(int argc, char ** argv)
         std::string reads2_base = basename(reads2);
         std::ifstream reads1_f(reads1.c_str());
         std::ifstream reads2_f(reads2.c_str());
-        std::ofstream se1_f((out_dir + "/" + reads1_base + ".se.fastq").c_str(),
+
+        std::string file_name_se1 = out_dir + "/" + reads1_base + ".se.fastq";
+        std::string file_name_se2 = out_dir + "/" + reads2_base + ".se.fastq";
+        std::string file_name_bad1 = out_dir + "/" + reads1_base + ".filtered.fastq";
+        std::string file_name_bad2 = out_dir + "/" + reads2_base + ".filtered.fastq";
+
+        std::ofstream se1_f(file_name_se1.c_str(),
                             std::ofstream::out);
-        std::ofstream se2_f((out_dir + "/" + reads2_base + ".se.fastq").c_str(),
+        std::ofstream se2_f(file_name_se2.c_str(),
                             std::ofstream::out);
-        std::ofstream bad1_f((out_dir + "/" + reads1_base + ".filtered.fastq").c_str(),
+        std::ofstream bad1_f(file_name_bad1.c_str(),
                             std::ofstream::out);
-        std::ofstream bad2_f((out_dir + "/" + reads2_base + ".filtered.fastq").c_str(),
+        std::ofstream bad2_f(file_name_bad2.c_str(),
                             std::ofstream::out);
+
+        std::cout << "Created output files:" << std::endl;
+        std::cout << "\t" << file_name_se1 << std::endl;
+        std::cout << "\t" << file_name_se2 << std::endl;
+        std::cout << "\t" << file_name_bad1 << std::endl;
+        std::cout << "\t" << file_name_bad2 << std::endl;
+
 
         if (!reads1_f.good() || !reads2_f.good()) {
             std::cout << "reads file is bad" << std::endl;
