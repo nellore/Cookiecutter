@@ -140,6 +140,12 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     }
 }
 
+td::string remove_extension(const std::string& filename) {
+    size_t lastdot = filename.find_last_of(".");
+    if (lastdot == std::string::npos) return filename;
+    return filename.substr(0, lastdot); 
+}
+
 std::string basename(std::string const & path)
 {
     std::string res(path);
@@ -147,10 +153,7 @@ std::string basename(std::string const & path)
     if (pos != std::string::npos) {
         res.erase(0, pos);
     }
-    pos = res.find('.');
-    if (pos != std::string::npos) {
-        res.erase(pos, path.size());
-    }
+    res = remove_extension(res);
     return res;
 }
 
