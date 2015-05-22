@@ -133,7 +133,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     }
 }
 
-td::string remove_extension(const std::string& filename) {
+std::string remove_extension(const std::string& filename) {
     size_t lastdot = filename.find_last_of(".");
     if (lastdot == std::string::npos) return filename;
     return filename.substr(0, lastdot); 
