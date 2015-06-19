@@ -14,6 +14,12 @@
 #include "stats.h"
 #include "seq.h"
 
+/*! \brief Read adapter patterns from an input stream
+ *
+ *  \param[in]  kmers_f     an input stream to read the patterns
+ *  \param[in]  polyG       the length of poly-G and poly-C patterns
+ *  \param[in]  patters     the vector to which the patterns are written
+ */
 void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <std::string, Node::Type> > & patterns)
 {
     std::string tmp;
@@ -37,6 +43,18 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
     }
 }
 
+/*! \brief Given a read sequence, calculate its DUST score
+ *
+ *  \param[in]  read    a read sequence
+ *  \param[in]  k       the DUST algorithm parameter
+ *  \return             the DUST score
+ *
+ *  \remark For more information on the DUST score, please check the following
+ *  paper:
+ *  Morgulis, Aleksandr, E. Michael Gertz, Alejandro A. Schäffer, and Richa
+ *  Agarwala. "A fast and symmetric DUST implementation to mask low-complexity
+ *  DNA sequences." *Journal of Computational Biology* 13, no. 5 (2006): 1028-1040.
+ */
 double get_dust_score(std::string const & read, int k)
 {
     std::unordered_map <int, int> counts;
@@ -65,6 +83,18 @@ double get_dust_score(std::string const & read, int k)
     return (total / (read.size() - k + 1));
 }
 
+/*! \brief Check a read against patterns
+ *
+ *  \param[in]  read        a read sequence
+ *  \param[in]  root        a root of the trie structure used for string matching
+ *  \param[in]  patterns    a vector of patterns
+ *  \param[in]  length      the read length threshold
+ *  \param[in]  dust_k      the DUST algorithm parameter
+ *  \param[in]  dust_cutoff the DUST score threshold
+ *  \param[in]  errors      the number of resolved mismatches between a read and 
+ *                          a pattern
+ *  \return                 the read type
+ */
 ReadType check_read(std::string const & read, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
                     unsigned int length, int dust_k, int dust_cutoff, int errors)
 {
@@ -82,6 +112,19 @@ ReadType check_read(std::string const & read, Node * root, std::vector <std::pai
     }
 }
 
+/*! \brief Filter single-end reads by patterns
+ *
+ *  \param[in]  reads_f     an input stream of read sequences
+ *  \param[out] ok_f        an output stream of filtered reads
+ *  \param[out] stats       statistics on processed reads
+ *  \param[out] root        a root of the trie structure used to perform string matching
+ *  \param[in]  patterns    a vector of patterns for read filtration
+ *  \param[in]  length      the read length threshold
+ *  \param[in]  dust_k      the DUST algorithm parameter
+ *  \param[in]  dust_cutoff the DUST score threshold
+ *  \param[in]  errors      the number of resolved mismatches between a read and 
+ *                          a pattern
+ */
 void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, 
                          Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
                          int length, int dust_k, int dust_cutoff, int errors)
@@ -103,6 +146,22 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f,
     }
 }
 
+/*! \brief Filter paired-end reads by patterns
+ *
+ *  \param[in]  reads1_f    an input stream of paired-end read 1 sequences
+ *  \param[in]  reads2_f    an input stream of paired-end read 2 sequences
+ *  \param[out] ok1_f       an output stream to write filtered paired-end read 1 sequences to
+ *  \param[out] ok2_f       an output stream to write filtered paired-end read 2 sequences to
+ *  \param[out] stats1      statistics on first parts of processed reads
+ *  \param[out] stats2      statistics on second parts of processed reads
+ *  \param[in]  root        a root of the trie structure used to perform string matching
+ *  \param[in]  patterns    a vector of patterns for read filtration
+ *  \param[in]  length      the read length threshold
+ *  \param[in]  dust_k      the DUST algorithm parameter
+ *  \param[in]  dust_cutoff the DUST score threshold
+ *  \param[in]  errors      the number of resolved mismatches between a read and
+ *                          a pattern
+ */
 void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
                          std::ofstream & ok1_f, std::ofstream & ok2_f,
                          Stats & stats1, Stats & stats2,
@@ -133,12 +192,22 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     }
 }
 
+/*! \brief Remove an extension from a filename
+ *
+ *  \param[in]  filename    a name of a file
+ *  \return                 the specified filename without its extension
+ */
 std::string remove_extension(const std::string& filename) {
     size_t lastdot = filename.find_last_of(".");
     if (lastdot == std::string::npos) return filename;
     return filename.substr(0, lastdot); 
 }
 
+/*! \brief Get a filename from a path
+ *
+ *  \param[in]  path    a file path
+ *  \return             a filename from the specified path
+ */
 std::string basename(std::string const & path)
 {
     std::string res(path);
@@ -150,11 +219,13 @@ std::string basename(std::string const & path)
     return res;
 }
 
+/*! \brief Print program parameters */
 void print_help() 
 {
     std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
 }
 
+/*! \brief The main function of the **remove** tool. */
 int main(int argc, char ** argv)
 {
     Node root('0');
