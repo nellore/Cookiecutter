@@ -207,6 +207,10 @@ int main(int argc, char ** argv)
         return -1;
     }
 
+    if (!verify_directory(out_dir)) {
+        std::cout << "Output directory does not exist, failed to create" << std::endl;
+    }
+
     std::ifstream kmers_f (kmers.c_str());
     if (!kmers_f.good()) {
         std::cout << "Cannot open kmers file" << std::endl;
