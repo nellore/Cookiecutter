@@ -224,6 +224,7 @@ int main(int argc, char ** argv)
     
     if (!verify_directory(out_dir)) {
         std::cout << "Output directory does not exist, failed to create" << std::endl;
+        return -1;
     }
 
     std::ifstream kmers_f (kmers.c_str());
