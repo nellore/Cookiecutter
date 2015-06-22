@@ -2,12 +2,15 @@ CXX = g++
 CXXFLAGS = -std=c++0x -Wall -O2
 PREFIX ?= /usr/local
 
-OBJ = seq.o search.o stats.o fileroutines.o
+OBJ = seq.o search.o stats.o fileroutines.o readroutines.o
 
 all: rm_reads extractor remove
 
 fileroutines.o: fileroutines.h fileroutines.cpp
 	$(CXX) -c $(CXXFLAGS) fileroutines.cpp
+
+readroutines.o: readroutines.h readroutines.cpp
+	$(CXX) -c $(CXXFLAGS) readroutines.cpp
 
 seq.o: seq.h seq.cpp
 	$(CXX) -c $(CXXFLAGS) seq.cpp
