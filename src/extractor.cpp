@@ -14,6 +14,11 @@
 #include "stats.h"
 #include "seq.h"
 
+/*! \brief Read adapter patterns from an input stream
+ *
+ *  \param[in]  kmers_f     an input stream to read the patterns from
+ *  \param[out] patterns    the vector to which the patterns are written
+ */
 void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string, Node::Type> > & patterns)
 {
     std::string tmp;
@@ -32,6 +37,14 @@ void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string
     kmers_f.close();
 }
 
+/*! \brief Check a read against patterns
+ *
+ *  \param[in]  read        a read sequence
+ *  \param[in]  root        a root of the trie structure used for string matching
+ *  \param[in]  patterns    a vector of patterns
+ *  \param[in]  errors      the number of resolved mismatches between a read and a pattern
+ *  \return                 the read type
+ */
 ReadType check_read(std::string const & read, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
     if (errors) {
@@ -41,6 +54,15 @@ ReadType check_read(std::string const & read, Node * root, std::vector <std::pai
     }
 }
 
+/*! \brief Filter single-end reads by patterns
+ *
+ *  \param[in]  reads_f     an input stream of read sequences
+ *  \param[out] bad_f       an output stream to write filtered out reads to
+ *  \param[out] stats       statistics on processed reads
+ *  \param[out] root        a root of the trie structure used to perform string matching
+ *  \param[in]  patterns    a vector of patterns for read filtration
+ *  \param[in]  errors      the number of resolved mismatches between a read and a pattern
+ */
 void filter_single_reads(std::ifstream & reads_f, std::ofstream & bad_f, 
                          Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
@@ -61,6 +83,23 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & bad_f,
     }
 }
 
+/*! \brief Filter paired-end reads by patterns
+ *
+ *  \param[in]  reads1_f    an input stream of paired-end read 1 sequences
+ *  \param[in]  reads2_f    an input stream of paired-end read 2 sequences
+ *  \param[out] bad1_f      an output stream to write filtered out paired-end read 1 sequences to
+ *  \param[out] bad2_f      an output stream to write filtered out paired-end read 2 sequences to
+ *  \param[out] se1_f       an output stream to write filtered first parts of paired-end reads
+ *  \param[out] se2_f       an output stream to write filtered second parts of paired-end reads
+ *  \param[out] stats1      statistics on first parts of processed reads
+ *  \param[out] stats2      statistics on second parts of processed reads
+ *  \param[in]  root        a root of the trie structure used to perform string matching
+ *  \param[in]  patterns    a vector of patterns for read filtration
+ *  \param[in]  errors      the number of resolved mismatches between a read and a pattern
+ *
+ *  \remark The streams \p se1_f (and \p se2_f) correspond to paired-end reads which second
+ *  (or first) part was filtered but the other one was left.
+ */
 void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
                          std::ofstream & bad1_f, std::ofstream & bad2_f,
                          std::ofstream & se1_f, std::ofstream & se2_f,
@@ -99,12 +138,22 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     }
 }
 
+/*! \brief Remove an extension from a filename
+ *
+ *  \param[in]  filename    a name of a file
+ *  \return                 the specified filename without its extension
+ */
 std::string remove_extension(const std::string& filename) {
     size_t lastdot = filename.find_last_of(".");
     if (lastdot == std::string::npos) return filename;
     return filename.substr(0, lastdot); 
 }
 
+/*! \brief Get a filename from a path
+ *
+ *  \param[in]  path    a file path
+ *  \return             a filename from the specified path
+ */
 std::string basename(std::string const & path)
 {
     std::string res(path);
@@ -116,11 +165,13 @@ std::string basename(std::string const & path)
     return res;
 }
 
+/*! \brief Print program parameters */
 void print_help() 
 {
     std::cout << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e errors" << std::endl;
 }
 
+/*! \brief The main function of the **extract** tool. */
 int main(int argc, char ** argv)
 {
     Node root('0');

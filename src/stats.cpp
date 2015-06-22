@@ -1,5 +1,10 @@
 #include "stats.h"
 
+/*! \brief Update readc counts
+ *
+ *  \param[in]  type    a read type
+ *  \param[in]  paired  is a read paired or not
+ */
 void Stats::update(ReadType type, bool paired)
 {
     auto it = reads.find(type);
@@ -18,6 +23,12 @@ void Stats::update(ReadType type, bool paired)
     }
 }
 
+/*! \brief A friend function to write statistics to an output stream
+ *
+ *  \param[in]  out     an output stream to write read statistics to
+ *  \param[in]  stats   a Stats object to write to the specified stream
+ *  \return             the output stream the statistics were written to
+ */
 std::ostream & operator << (std::ostream & out, const Stats & stats)
 {
     out << stats.filename << std::endl;

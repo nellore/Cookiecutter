@@ -7,6 +7,13 @@
 
 unsigned int last_id = 1;
 
+/*! \brief Build the trie structure
+ *
+ *  \param[in,out]  root        the structure root
+ *  \param[in]      patterns    the list of patterns for search
+ *  \param[in]      errors      the number of resolved mismatches between a read and
+ *                              a pattern
+ */
 void build_trie(Node & root, std::vector <std::pair <std::string, Node::Type> > const & patterns, int errors)
 {
     for (auto it = patterns.begin(); it != patterns.end(); ++it) {
@@ -51,6 +58,10 @@ void build_trie(Node & root, std::vector <std::pair <std::string, Node::Type> > 
     }
 }
 
+/*! \brief  Add failure nodes to a trie
+ *
+ *  \param[in,out]  root    a root of the trie structure to add failure nodes to
+ */
 void add_failures(Node & root)
 {
     std::list <Node *> queue;
@@ -75,6 +86,11 @@ void add_failures(Node & root)
     } while(queue.size());
 }
 
+/*! \brief Move to the node with the specified label
+ *
+ *  \param[in,out]  curr    a node to move from
+ *  \param[in]      c       a label of a node to move to
+ */
 void go(Node * & curr, char c)
 {
     while (!curr->next(c) && curr != curr->fail) {
@@ -86,6 +102,10 @@ void go(Node * & curr, char c)
     }
 }
 
+/*! \brief Find all matches for the specified patterns
+ *
+ *  \todo Describe function arguments and the value it returns.
+ */
 Node::Type find_all_matches(Node * node, size_t pos,
                       std::map <size_t, std::vector <std::pair<size_t, size_t> > > & matches,
                       size_t errors) {
@@ -120,6 +140,10 @@ Node::Type find_all_matches(Node * node, size_t pos,
     return Node::Type::no_match;
 }
 
+/*! \brief Fidn a single match for the specified pattern
+ *
+ *  \todo Describe function arguments and the value it returns.
+ */
 Node::Type find_match(Node * node) {
     Node * curr = node;
     while (curr->fail != curr) {
@@ -131,11 +155,29 @@ Node::Type find_match(Node * node) {
     return Node::Type::no_match;
 }
 
+/*! \brief Compare upper cases of the specified characeters
+ *
+ *  \param[in]  i   the first character to be compared
+ *  \param[in]  j   the second character to be compared
+ *  \return         whether upper cases of the specified charaters are equal or not
+ */
 bool cmp_upper(char i, char j)
 {
     return std::toupper(i) == std::toupper(j);
 }
 
+/*! \brief Count errors between a text and a pattern
+ *
+ *  \param[in]  text        a text string
+ *  \param[in]  text_pos    a position to compare \p text from
+ *  \param[in]  pattern     a pattern string
+ *  \param[in]  pattern_pos a position to compare \p pattern from
+ *  \param[in]  length      the length of the \p text fragment to compare
+ *  \param[in]  err_max     the maxumum number of errors
+ *
+ *  \return     the number of mismatches (errors) between the specified text and
+ *              pattern
+ */
 int count_errors(std::string const & text, size_t text_pos,
                  std::string const & pattern, size_t pattern_pos,
                  size_t length, int err_max)
@@ -159,6 +201,15 @@ int count_errors(std::string const & text, size_t text_pos,
     return errors;
 }
 
+/*! \brief Check for partial matches between a text and patterns
+ *
+ *  \param[in]  text        a text to be compared to patterns
+ *  \param[in]  patterns    a list of patterns to compare the specified text to
+ *  \param[out] matches     matches between the specified text and patterns
+ *  \param[in]  errors      the number of mismatches between a text and patterns
+ *
+ *  \return     whether any partial matches were found or not
+ */
 bool check_partial_matches(std::string const & text,
                            std::vector <std::pair<std::string, Node::Type> > const & patterns,
                            std::map <size_t, std::vector <std::pair <size_t, size_t> > > & matches, int errors)
@@ -245,6 +296,15 @@ bool check_partial_matches(std::string const & text,
     return false;
 }
 
+/*! \brief Search for inexact pattern matches in a text
+ *
+ *  \param[in]  text        a text to search pattern matches in
+ *  \param[in]  root        a root of the trie structure for search
+ *  \param[in]  patterns    a vector of patterns to search for in a text
+ *  \param[in]  errors      the number of mismatches between a text and patterns
+ *
+ *  \return     an identified match type
+ */
 Node::Type search_inexact(const std::string & text, Node * root,
                           std::vector <std::pair<std::string, Node::Type> > const & patterns,
                           int errors)
@@ -266,6 +326,13 @@ Node::Type search_inexact(const std::string & text, Node * root,
     return Node::Type::no_match;
 }
 
+/*! \brief Seach for any matches between a text and a trie
+ *
+ *  \param[in]  text    a text to search matches in
+ *  \param[in]  root    a root of the trie structure for match search
+ *
+ *  \return     an idenfitied match type
+ */
 Node::Type search_any(const std::string & text, Node * root)
 {
     size_t text_len = text.size();
