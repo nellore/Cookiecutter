@@ -1,4 +1,5 @@
 #include "readroutines.h"
+#include <cmath>
 #include <unordered_map>
 
 /*! \brief Given a read sequence, calculate its DUST score
