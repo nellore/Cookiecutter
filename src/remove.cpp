@@ -22,7 +22,7 @@
  *  \param[in]  polyG       the length of poly-G and poly-C patterns
  *  \param[in]  patters     the vector to which the patterns are written
  */
-void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <std::string, Node::Type> > & patterns)
+void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string, Node::Type> > & patterns)
 {
     std::string tmp;
     while (!kmers_f.eof()) {
@@ -39,10 +39,6 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
     }
     kmers_f.close();
     patterns.push_back(std::make_pair("NN", Node::Type::n));
-    if (polyG) {
-        patterns.push_back(std::make_pair(std::string(polyG, 'G'), Node::Type::polyG));
-        patterns.push_back(std::make_pair(std::string(polyG, 'C'), Node::Type::polyC));
-    }
 }
 
 /*! \brief Filter single-end reads by patterns
@@ -59,14 +55,13 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
  *                          a pattern
  */
 void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, 
-                         Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
-                         int length, int dust_k, int dust_cutoff, int errors)
+                         Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
     Seq read;
     int processed = 0;
 
     while (read.read_seq(reads_f)) {
-        ReadType type = check_read(read.seq, root, patterns, length, dust_k, dust_cutoff, errors);
+        ReadType type = check_read(read.seq, root, patterns, 0, 0, 0, errors);
         stats.update(type);
         if (type == ReadType::ok) {
             read.write_seq(ok_f);
@@ -98,16 +93,15 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f,
 void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
                          std::ofstream & ok1_f, std::ofstream & ok2_f,
                          Stats & stats1, Stats & stats2,
-                         Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
-                         int length, int dust_k, int dust_cutoff, int errors)
+                         Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
     Seq read1;
     Seq read2;
     int processed = 0;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
-        ReadType type1 = check_read(read1.seq, root, patterns, length, dust_k, dust_cutoff, errors);
-        ReadType type2 = check_read(read2.seq, root, patterns, length, dust_k, dust_cutoff, errors);
+        ReadType type1 = check_read(read1.seq, root, patterns, 0, 0, 0, errors);
+        ReadType type2 = check_read(read2.seq, root, patterns, 0, 0, 0, errors);
         if (type1 == ReadType::ok && type2 == ReadType::ok) {
             read1.write_seq(ok1_f);
             read2.write_seq(ok2_f);
@@ -128,7 +122,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
+    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e 1" << std::endl;
 }
 
 /*! \brief The main function of the **remove** tool. */
@@ -140,31 +134,16 @@ int main(int argc, char ** argv)
     std::string kmers, reads, out_dir;
     std::string reads1, reads2;
     char rez = 0;
-    int length = 0;
-    int polyG = 0;
-    int dust_k = 4;
-    int dust_cutoff = 0;
     int errors = 0;
 
     const struct option long_options[] = {
-        {"length",required_argument,NULL,'l'},
-        {"polyG",required_argument,NULL,'p'},
         {"fragments",required_argument,NULL,'a'},
-        {"dust_k",required_argument,NULL,'k'},
-        {"dust_cutoff",required_argument,NULL,'c'},
         {"errors",required_argument,NULL,'e'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:a:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:a:i:o:e:", long_options, NULL)) != -1) {
         switch (rez) {
-        case 'l':
-            length = std::atoi(optarg);
-            break;
-        case 'p':
-            polyG = std::atoi(optarg);
-            // polyG = boost::lexical_cast<int>(optarg);
-            break;
         case 'a':
             kmers = optarg;
             break;
@@ -179,12 +158,6 @@ int main(int argc, char ** argv)
             break;
         case 'o':
             out_dir = optarg;
-            break;
-        case 'c':
-            dust_cutoff = std::atoi(optarg);
-            break;
-        case 'k':
-            dust_k = std::atoi(optarg);
             break;
         case 'e':
             errors = std::atoi(optarg);
@@ -219,9 +192,9 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    init_type_names(length, polyG, dust_k, dust_cutoff);
+    init_type_names();
 
-    build_patterns(kmers_f, polyG, patterns);
+    build_patterns(kmers_f, patterns);
 
     /*
     for (std::vector <std::string> ::iterator it = patterns.begin(); it != patterns.end(); ++it) {
@@ -258,7 +231,7 @@ int main(int argc, char ** argv)
 
         Stats stats(reads);
 
-        filter_single_reads(reads_f, ok_f, stats, &root, patterns, length, dust_k, dust_cutoff, errors);
+        filter_single_reads(reads_f, ok_f, stats, &root, patterns, errors);
 
         std::cout << stats;
 
@@ -291,7 +264,7 @@ int main(int argc, char ** argv)
 
         filter_paired_reads(reads1_f, reads2_f, ok1_f, ok2_f,
                             stats1, stats2,
-                            &root, patterns, length, dust_k, dust_cutoff, errors);
+                            &root, patterns, errors);
 
         std::cout << stats1;
         std::cout << stats2;
