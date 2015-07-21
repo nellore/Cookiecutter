@@ -122,7 +122,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e 1" << std::endl;
+    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
 }
 
 /*! \brief The main function of the **remove** tool. */
@@ -138,11 +138,10 @@ int main(int argc, char ** argv)
 
     const struct option long_options[] = {
         {"fragments",required_argument,NULL,'a'},
-        {"errors",required_argument,NULL,'e'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:a:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:a:i:o:", long_options, NULL)) != -1) {
         switch (rez) {
         case 'a':
             kmers = optarg;
@@ -158,9 +157,6 @@ int main(int argc, char ** argv)
             break;
         case 'o':
             out_dir = optarg;
-            break;
-        case 'e':
-            errors = std::atoi(optarg);
             break;
         case '?':
             print_help();
