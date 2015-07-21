@@ -27,10 +27,6 @@ public:
         polyC           //!< a poly-C sequence
     };
 
-    /*! \brief The default constructor
-     */
-    Node() : fail(NULL), type(Type::no_match) {}
-    
     /*! \brief Initialize a node with a label
      *
      *  \param[in]  label   a node label
