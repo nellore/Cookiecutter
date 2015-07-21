@@ -143,7 +143,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
+    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
 }
 
 /*! \brief The main function of the **rm_reads** tool. */
@@ -167,11 +167,10 @@ int main(int argc, char ** argv)
         {"fragments",required_argument,NULL,'a'},
         {"dust_k",required_argument,NULL,'k'},
         {"dust_cutoff",required_argument,NULL,'c'},
-        {"errors",required_argument,NULL,'e'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:a:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:l:p:a:i:o:", long_options, NULL)) != -1) {
         switch (rez) {
         case 'l':
             length = std::atoi(optarg);
@@ -200,9 +199,6 @@ int main(int argc, char ** argv)
             break;
         case 'k':
             dust_k = std::atoi(optarg);
-            break;
-        case 'e':
-            errors = std::atoi(optarg);
             break;
         case '?':
             print_help();

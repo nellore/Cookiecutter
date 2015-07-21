@@ -15,7 +15,7 @@ enum ReadType{
     dust            //!< has low complexity according to the *DustMasker* model
 };
 
-void init_type_names(int length, int polyG, int dust_k, int dust_cutoff);
+void init_type_names(int length = 0, int polyG = 0, int dust_k = 0, int dust_cutoff = 0);
 
 /*! \brief Get read type name from its value
  *
