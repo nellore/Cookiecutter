@@ -83,7 +83,7 @@ void add_failures(Node & root)
             }
         }
         queue.insert(queue.end(), curr->links.begin(), curr->links.end());
-    } while(queue.size());
+    } while(!queue.empty());
 }
 
 /*! \brief Move to the node with the specified label
@@ -182,9 +182,6 @@ int count_errors(std::string const & text, size_t text_pos,
                  std::string const & pattern, size_t pattern_pos,
                  size_t length, int err_max)
 {
-    if (text_pos < 0) {
-        return err_max + 1;
-    }
     auto text_it = text.begin() + text_pos;
     auto text_last = text_it + length;
     auto pattern_it = pattern.begin() + pattern_pos;
