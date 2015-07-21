@@ -38,11 +38,6 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
         }
     }
     kmers_f.close();
-    patterns.push_back(std::make_pair("NN", Node::Type::n));
-    if (polyG) {
-        patterns.push_back(std::make_pair(std::string(polyG, 'G'), Node::Type::polyG));
-        patterns.push_back(std::make_pair(std::string(polyG, 'C'), Node::Type::polyC));
-    }
 }
 
 /*! \brief Filter single-end reads by patterns
@@ -143,7 +138,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k -e 1" << std::endl;
+    std::cout << "./separate [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
 }
 
 /*! \brief The main function of the **rm_reads** tool. */
