@@ -82,7 +82,7 @@ Creating  a kmer list from fasta file
 
 
 ```sh
-make_library.py -i input_fasta.fa -o kmers.dat
+make_library.py -i input_fasta.fa -o fragments.dat
 ```
 
 
