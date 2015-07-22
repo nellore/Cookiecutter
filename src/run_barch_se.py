@@ -85,9 +85,9 @@ if __name__ == '__main__':
         }
         if command == "rm_reads":
             if dustk and dustcutoff:
-                command = "%(command)s -i %(left)s -o %(out)s --adapters %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s --mq %(mq)s" % data
+                command = "%(command)s -i %(left)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s --mq %(mq)s" % data
             else:
-                command = "%(command)s -i %(left)s -o %(out)s --adapters %(fragments)s  --polyG %(polyG)s --length %(length)s --mq %(mq)s" % data
+                command = "%(command)s -i %(left)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --mq %(mq)s" % data
         else:   
             command = "%(command)s -i %(left)s -o %(out)s --fragments %(fragments)s" % data
         commands.append(command)
