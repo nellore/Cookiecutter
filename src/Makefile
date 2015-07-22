@@ -4,7 +4,7 @@ PREFIX ?= /usr/local
 
 OBJ = seq.o search.o stats.o fileroutines.o readroutines.o
 
-all: rm_reads extractor remove
+all: rm_reads extractor remove separate
 
 fileroutines.o: fileroutines.h fileroutines.cpp
 	$(CXX) -c $(CXXFLAGS) fileroutines.cpp
@@ -41,9 +41,10 @@ clean:
 
 install:
 	cp rm_reads $(PREFIX)/bin/rm_reads
+	cp separate $(PREFIX)/bin/separate
 	cp extractor $(PREFIX)/bin/extractor
 	cp remove $(PREFIX)/bin/remove
 
 uninstall:
-	rm $(PREFIX)/bin/rm_reads $(PREFIX)/bin/extractor $(PREFIX)/bin/remove
+	rm $(PREFIX)/bin/rm_reads $(PREFIX)/bin/extractor $(PREFIX)/bin/remove $(PREFIX)/bin/separate
 
