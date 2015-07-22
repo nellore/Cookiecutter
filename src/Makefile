@@ -30,7 +30,7 @@ extractor: extractor.cpp $(OBJ)
 remove: remove.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o remove remove.cpp $(OBJ)
 
-remove: separate.cpp $(OBJ)
+separate: separate.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o separate separate.cpp $(OBJ)
 
 .PHONY: install uninstall clean

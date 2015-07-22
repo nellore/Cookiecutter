@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	print command
 	os.system(command)
 
-	command = "../src/rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %(output_dir_1b)s --polyG 13 --length 50 --fragments ../data/illumina.dat --dust_cutoff 3 --dust_k 4 -e 0" % data
+	command = "../src/rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %(output_dir_1b)s --polyG 13 --length 50 --fragments ../data/illumina.dat --dust_cutoff 3 --dust_k 4" % data
 	print "Running analysis 1b (technical sequences and DUST filter)..."
 	print command
 	os.system(command)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 	# print command
 	# os.system(command)
 
-	command = "../src/remove -1 %(fastq1)s -2 %(fastq2)s -o %(output_dir_1e)s --fragments ../data/alpha.dat" % data
+	command = "../src/separate -1 %(fastq1)s -2 %(fastq2)s -o %(output_dir_1e)s --fragments ../data/alpha.dat" % data
 	print "Running analysis 1e (alpha satDNA removing)..."
 	print command
 	os.system(command)
