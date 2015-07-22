@@ -36,7 +36,7 @@ separate: separate.cpp $(OBJ)
 .PHONY: install uninstall clean
 
 clean:
-	rm rm_reads extractor remove
+	rm rm_reads extractor remove separate
 	rm *.o
 
 install:
