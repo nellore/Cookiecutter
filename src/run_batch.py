@@ -54,6 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('-l','--legnth', help='Minimal read length', required=False, default=50)
     parser.add_argument('-d','--dustcutoff', help='Cutoff for DUST algorithm', required=False, default=3)
     parser.add_argument('-k','--dustk', help='K for DUST algorithm', required=False, default=4)
+    parser.add_argument('-q','--mq', help='Mean read quality', required=False, default=20)
     args = vars(parser.parse_args())
 
     fastq_files1 = args["fastq1"].split(",")
@@ -66,6 +67,7 @@ if __name__ == '__main__':
     length = args["length"]
     dustk = args["dustk"]
     dustcutoff = args["dustcutoff"]
+    mq = args["mq"]
 
     if not len(fastq_files1) == len(fastq_files2):
         print("Not equal number of left and right fastq files")
@@ -88,9 +90,10 @@ if __name__ == '__main__':
             "length": length,
             "dustcutoff": dustcutoff,
             "dustk": dustk,
+            "mq": mq,
         }
         if command == "rm_reads":
-            command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s" % data
+            command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s --mq %(mq)s" % data
         else:   
             command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s" % data
         commands.append(command)
