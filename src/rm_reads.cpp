@@ -61,12 +61,12 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
  */
 void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofstream & bad_f, 
                          Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
-                         int length, int dust_k, int dust_cutoff, int errors)
+                         int length, int dust_k, int dust_cutoff, int errors, int mean_quality)
 {
     Seq read;
 
     while (read.read_seq(reads_f)) {
-        ReadType type = check_read(read.seq, root, patterns, length, dust_k, dust_cutoff, errors);
+        ReadType type = check_read(read.seq, read.qual, root, patterns, length, dust_k, dust_cutoff, errors, mean_quality);
         stats.update(type);
         if (type == ReadType::ok) {
             read.write_seq(ok_f);
@@ -106,14 +106,14 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
                          std::ofstream & se1_f, std::ofstream & se2_f,
                          Stats & stats1, Stats & stats2,
                          Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
-                         int length, int dust_k, int dust_cutoff, int errors)
+                         int length, int dust_k, int dust_cutoff, int errors, int mean_quality)
 {
     Seq read1;
     Seq read2;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
-        ReadType type1 = check_read(read1.seq, root, patterns, length, dust_k, dust_cutoff, errors);
-        ReadType type2 = check_read(read2.seq, root, patterns, length, dust_k, dust_cutoff, errors);
+        ReadType type1 = check_read(read1.seq, read1.qual, root, patterns, length, dust_k, dust_cutoff, errors, mean_quality);
+        ReadType type2 = check_read(read2.seq, read2.qual, root, patterns, length, dust_k, dust_cutoff, errors, mean_quality);
         if (type1 == ReadType::ok && type2 == ReadType::ok) {
             read1.write_seq(ok1_f);
             read2.write_seq(ok2_f);
@@ -143,7 +143,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
+    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k --mq 0" << std::endl;
 }
 
 /*! \brief The main function of the **rm_reads** tool. */
@@ -160,6 +160,7 @@ int main(int argc, char ** argv)
     int dust_k = 4;
     int dust_cutoff = 0;
     int errors = 0;
+    int mean_quality = 0;
 
     const struct option long_options[] = {
         {"length",required_argument,NULL,'l'},
@@ -167,6 +168,7 @@ int main(int argc, char ** argv)
         {"fragments",required_argument,NULL,'a'},
         {"dust_k",required_argument,NULL,'k'},
         {"dust_cutoff",required_argument,NULL,'c'},
+        {"mq",required_argument,NULL,'q'},
         {NULL,0,NULL,0}
     };
 
@@ -200,6 +202,9 @@ int main(int argc, char ** argv)
         case 'k':
             dust_k = std::atoi(optarg);
             break;
+        case 'q':
+            mean_quality = std::atoi(optarg);
+            break;
         case '?':
             print_help();
             return -1;
@@ -230,7 +235,7 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    init_type_names(length, polyG, dust_k, dust_cutoff);
+    init_type_names(length, polyG, dust_k, dust_cutoff, mean_quality);
 
     build_patterns(kmers_f, polyG, patterns);
 
@@ -269,7 +274,7 @@ int main(int argc, char ** argv)
 
         Stats stats(reads);
 
-        filter_single_reads(reads_f, ok_f, bad_f, stats, &root, patterns, length, dust_k, dust_cutoff, errors);
+        filter_single_reads(reads_f, ok_f, bad_f, stats, &root, patterns, length, dust_k, dust_cutoff, errors, mean_quality);
 
         std::cout << stats;
 
@@ -313,7 +318,7 @@ int main(int argc, char ** argv)
         filter_paired_reads(reads1_f, reads2_f, ok1_f, ok2_f,
                             bad1_f, bad2_f, se1_f, se2_f,
                             stats1, stats2,
-                            &root, patterns, length, dust_k, dust_cutoff, errors);
+                            &root, patterns, length, dust_k, dust_cutoff, errors, mean_quality);
 
         std::cout << stats1;
         std::cout << stats2;

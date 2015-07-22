@@ -42,6 +42,18 @@ double get_dust_score(std::string const & read, int k)
     return (total / (read.size() - k + 1));
 }
 
+double get_mean_quality(std::string const & qual) {
+    int sum = 0;
+    int val = 0;
+    double size = 0;
+    for (auto it = qual.begin(); it != qual.end(); ++it) {
+        val = (int)*it;
+        sum += val;
+        size += 1;
+    }
+    return sum/(double)size;
+}
+
 /*! \brief Check a read against patterns
  *
  *  \param[in]  read        a read sequence
@@ -54,12 +66,17 @@ double get_dust_score(std::string const & read, int k)
  *                          a pattern
  *  \return                 the read type
  */
-ReadType check_read(std::string const & read, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
-                    unsigned int length, int dust_k, int dust_cutoff, int errors)
+ReadType check_read(std::string const & read, std::string const & qual, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
+                    unsigned int length, int dust_k, int dust_cutoff, int errors, int mean_quality)
 {
     if (length && read.size() < length) {
         return ReadType::length;
     }
+
+    if (mean_quality > 0 && get_mean_quality(qual) < mean_quality) {
+        return ReadType::mean_quality;
+    }
+
     if (dust_cutoff && get_dust_score(read, dust_k) > dust_cutoff) {
         return ReadType::dust;
     }

@@ -21,11 +21,12 @@ std::map <ReadType, std::string> type_names;
  *  Agarwala. "A fast and symmetric DUST implementation to mask low-complexity
  *  DNA sequences." *Journal of Computational Biology* 13, no. 5 (2006): 1028-1040.
  */
-void init_type_names(int length, int polyG, int dust_k, int dust_cutoff)
+void init_type_names(int length, int polyG, int dust_k, int dust_cutoff, int mean_quality)
 {
     type_names[ReadType::ok] = "ok";
     type_names[ReadType::adapter] = "match";
     type_names[ReadType::n] = "n";
+    type_names[ReadType::mean_quality] = "mean_quality" + std::to_string(mean_quality);
     type_names[ReadType::polyG] = "polyG" + std::to_string(polyG);
     type_names[ReadType::polyC] = "polyC" + std::to_string(polyG);
     type_names[ReadType::length] = "length" + std::to_string(length);

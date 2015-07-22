@@ -60,7 +60,7 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f,
     int processed = 0;
 
     while (read.read_seq(reads_f)) {
-        ReadType type = check_read(read.seq, root, patterns, 0, 0, 0, errors);
+        ReadType type = check_read(read.seq, read.qual, root, patterns, 0, 0, 0, errors, 0);
         stats.update(type);
         if (type == ReadType::ok) {
             read.write_seq(ok_f);
@@ -99,8 +99,8 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     int processed = 0;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
-        ReadType type1 = check_read(read1.seq, root, patterns, 0, 0, 0, errors);
-        ReadType type2 = check_read(read2.seq, root, patterns, 0, 0, 0, errors);
+        ReadType type1 = check_read(read1.seq, read1.qual, root, patterns, 0, 0, 0, errors, 0);
+        ReadType type2 = check_read(read2.seq, read2.qual, root, patterns, 0, 0, 0, errors, 0);
         if (type1 == ReadType::ok && type2 == ReadType::ok) {
             read1.write_seq(ok1_f);
             read2.write_seq(ok2_f);

@@ -12,10 +12,11 @@ enum ReadType{
     polyG,          //!< contains too long polyG sequence
     polyC,          //!< contains too long polyC sequence
     length,         //!< read length is too short
-    dust            //!< has low complexity according to the *DustMasker* model
+    dust,           //!< has low complexity according to the *DustMasker* model
+    mean_quality    //!< mean quality is too small
 };
 
-void init_type_names(int length = 0, int polyG = 0, int dust_k = 0, int dust_cutoff = 0);
+void init_type_names(int length = 0, int polyG = 0, int dust_k = 0, int dust_cutoff = 0, int mean_quality = 20);
 
 /*! \brief Get read type name from its value
  *

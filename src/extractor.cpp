@@ -46,7 +46,7 @@ void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string
  *  \param[in]  errors      the number of resolved mismatches between a read and a pattern
  *  \return                 the read type
  */
-ReadType check_read(std::string const & read, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
+ReadType check_read_extractor(std::string const & read, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns, int errors)
 {
     if (errors) {
         return (ReadType)search_inexact(read, root, patterns, errors);
@@ -71,7 +71,7 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & bad_f,
     int processed = 0;
 
     while (read.read_seq(reads_f)) {
-        ReadType type = check_read(read.seq, root, patterns, errors);
+        ReadType type = check_read_extractor(read.seq, root, patterns, errors);
         stats.update(type);
         if (type != ReadType::ok) {
             read.write_seq(bad_f);
@@ -113,8 +113,8 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
     int processed = 0;
 
     while (read1.read_seq(reads1_f) && read2.read_seq(reads2_f)) {
-        ReadType type1 = check_read(read1.seq, root, patterns, errors);
-        ReadType type2 = check_read(read2.seq, root, patterns, errors);
+        ReadType type1 = check_read_extractor(read1.seq, root, patterns, errors);
+        ReadType type2 = check_read_extractor(read2.seq, root, patterns, errors);
         if (type1 == ReadType::ok && type2 == ReadType::ok) {
             
         } else {
