@@ -10,6 +10,19 @@ Requirements
 - gcc 4.7 and higher
 
 
+Installation
+----------------------
+
+```
+git clone http://github.com/ad3002/Cookiecutter.git
+cd Cookiecutter/src
+make
+sudo make install
+```
+
+If you don't have root access you can use compiled tools from src folder or add src folder to your PATH variable.
+
+
 Usage for adapter removing
 --------------------------
 
