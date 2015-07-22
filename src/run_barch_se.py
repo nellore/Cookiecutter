@@ -5,11 +5,10 @@
 #@author: Aleksey Komissarov
 #@contact: ad3002@gmail.com 
 
+import sys
 import argparse
 import os
-import sys
 import subprocess
-
 
 def run_asap(commands, cpu=10, mock=False):
     """
@@ -51,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument('-f','--fragments', help='Kmer library', required=True)
     parser.add_argument('-P','--cpus', help='CPUs', required=False, default=4)
     parser.add_argument('-g','--polyG', help='Length of polyG/polyC track to filter out', required=False, default=23)
-    parser.add_argument('-l','--legnth', help='Minimal read length', required=False, default=50)
+    parser.add_argument('-l','--length', help='Minimal read length', required=False, default=50)
     parser.add_argument('-d','--dustcutoff', help='Cutoff for DUST algorithm', required=False, default=3)
     parser.add_argument('-k','--dustk', help='K for DUST algorithm', required=False, default=4)
     args = vars(parser.parse_args())
@@ -85,7 +84,10 @@ if __name__ == '__main__':
             "dustk": dustk,
         }
         if command == "rm_reads":
-            command = "%(command)s -i %(left)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s" % data
+            if dustk and dustcutoff:
+                command = "%(command)s -i %(left)s -o %(out)s --adapters %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s --mq %(mq)s" % data
+            else:
+                command = "%(command)s -i %(left)s -o %(out)s --adapters %(fragments)s  --polyG %(polyG)s --length %(length)s --mq %(mq)s" % data
         else:   
             command = "%(command)s -i %(left)s -o %(out)s --fragments %(fragments)s" % data
         commands.append(command)
