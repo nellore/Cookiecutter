@@ -9,6 +9,7 @@ Requirements
 - make
 - gcc 4.7 and higher
 
+
 Usage for adapter removing
 --------------------------
 
@@ -64,6 +65,15 @@ Input files
 --------------------
 
 Tools takes files with reads in fastq format as input. You can also use paired end reads. In case if you are using paired end reads, please, make sure that all reads from first file have correct pairs in second file.
+
+Creating  a kmer list from fasta file
+-------------------------------------
+
+
+```sh
+make_library.py -i input_fasta.fa -o kmers.dat
+```
+
 
 Output files
 --------------------
