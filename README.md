@@ -90,9 +90,9 @@ Output files
 --------------------
 
 Tool creates following files in output directory:
-input_prefix.ok.fastq       file with correct reads
-input_prefix.fitered.fastq  file with reads, containing adapter kmers, N's, polyG/polyC tails or filtered by dust filter. Reason why read was filtered is given in the read id.
-input_prefix.se.fastq       for paired reads only. File with correct reads which have incorrect pair.
+input_prefix.ok.fastq       file with correct reads (rm_reads, remove, separate)
+input_prefix.fitered.fastq  file with reads, containing adapter kmers, N's, polyG/polyC tails or filtered by dust  (rm_reads, extractor separate)filter. Reason why read was filtered is given in the read id.
+input_prefix.se.fastq       for paired reads only. File with correct reads which have incorrect pair (rm_reads, separate).
 
 Project page
 --------------------
