@@ -9,10 +9,10 @@ Requirements
 - make
 - gcc 4.7 and higher
 
-Usage
-----------------------
+Usage for adapter removing
+--------------------------
 
-./rm_reads <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --adapters adapters.dat [-o output_dir --polyG 13 --length 50 --dust_cutoff cutoff --dust_k k -errors 0 -filterN]
+./rm_reads <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments adapters.dat [-o output_dir --polyG 13 --length 50 --dust_cutoff cutoff --dust_k k -filterN]
 
     -i              input file
     -1              first input file for paired reads
@@ -20,11 +20,45 @@ Usage
     -o              output directory (current directory by default)
     --polyG, -p     length of polyG/polyC tails (13 by default)
     --length, -l    minimum length cutoff (50 by default)
-    --adapters, -a  file with adapter kmers
+    --fragments  file with adapter kmers
     --dust_k, -k    window size for dust filter (not used by default)
     --dust_cutoff, -c   cutoff by dust score (not used by default)
     --errors, -e    maximum error count in match, possible values - 0, 1, 2 (0 by default)
     --filterN, -N   allow filter by N's in reads
+
+Usage for reads removing by list with kmers
+-------------------------------------------
+
+./remove <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
+
+    -i              input file
+    -1              first input file for paired reads
+    -2              second input file for paired reads
+    -o              output directory (current directory by default)
+    --fragments     file with kmers
+
+Usage for reads extraction by list with kmers
+-------------------------------------------
+
+./extractor <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
+
+    -i              input file
+    -1              first input file for paired reads
+    -2              second input file for paired reads
+    -o              output directory (current directory by default)
+    --fragments     file with kmers
+
+Usage for reads separating into two groups by list with kmers
+-------------------------------------------
+
+./separate <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
+
+    -i              input file
+    -1              first input file for paired reads
+    -2              second input file for paired reads
+    -o              output directory (current directory by default)
+    --fragments     file with kmers
+
 
 Input files
 --------------------
