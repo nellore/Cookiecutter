@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('-f','--fragments', help='Kmer library', required=True)
     parser.add_argument('-P','--cpus', help='CPUs', required=False, default=4)
     parser.add_argument('-g','--polyG', help='Length of polyG/polyC track to filter out', required=False, default=23)
-    parser.add_argument('-l','--legnth', help='Minimal read length', required=False, default=50)
+    parser.add_argument('-l','--length', help='Minimal read length', required=False, default=50)
     parser.add_argument('-d','--dustcutoff', help='Cutoff for DUST algorithm', required=False, default=3)
     parser.add_argument('-k','--dustk', help='K for DUST algorithm', required=False, default=4)
     args = vars(parser.parse_args())
