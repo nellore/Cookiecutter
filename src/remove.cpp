@@ -38,7 +38,6 @@ void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string
         }
     }
     kmers_f.close();
-    patterns.push_back(std::make_pair("NN", Node::Type::n));
 }
 
 /*! \brief Filter single-end reads by patterns
