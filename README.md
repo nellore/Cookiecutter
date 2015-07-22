@@ -66,6 +66,17 @@ Input files
 
 Tools takes files with reads in fastq format as input. You can also use paired end reads. In case if you are using paired end reads, please, make sure that all reads from first file have correct pairs in second file.
 
+```sh
+run_batch.py -1 fastqA_1.fastq,fastqB_1.fastq -2 fastqA_2.fastq,fastqB_2.fastq -c remove --fragments fragments.dat -o filtered
+```
+
+Or with single end data:
+
+```sh
+run_batch_se.py -i fastqA.fastq,fastqB.fastq -c remove --fragments fragments.dat -o filtered
+```
+
+
 Creating  a kmer list from fasta file
 -------------------------------------
 
