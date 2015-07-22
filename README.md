@@ -8,6 +8,7 @@ Requirements
 
 - make
 - gcc 4.7 and higher
+- tested only on Linux/Unix and MacOS operation systems
 
 
 Installation
