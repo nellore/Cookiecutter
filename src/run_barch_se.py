@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     fastq_files1 = args["fastq1"].split(",")
     cpu = int(args["cpus"])
-    out_folder = int(args["out"])
+    out_folder = args["out"]
     command = args["command"]
     fragments = args["fragments"]
     polyG = args["polyG"]
