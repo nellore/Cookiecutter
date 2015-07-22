@@ -22,7 +22,7 @@
  *  \param[in]  polyG       the length of poly-G and poly-C patterns
  *  \param[out] patterns    the vector to which the patterns are written
  */
-void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <std::string, Node::Type> > & patterns)
+void build_patterns(std::ifstream & kmers_f, std::vector <std::pair <std::string, Node::Type> > & patterns)
 {
     std::string tmp;
     while (!kmers_f.eof()) {
@@ -157,24 +157,13 @@ int main(int argc, char ** argv)
     int errors = 0;
 
     const struct option long_options[] = {
-        {"length",required_argument,NULL,'l'},
-        {"polyG",required_argument,NULL,'p'},
         {"fragments",required_argument,NULL,'a'},
-        {"dust_k",required_argument,NULL,'k'},
-        {"dust_cutoff",required_argument,NULL,'c'},
         {"errors",required_argument,NULL,'e'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:a:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:a:i:o:e:", long_options, NULL)) != -1) {
         switch (rez) {
-        case 'l':
-            length = std::atoi(optarg);
-            break;
-        case 'p':
-            polyG = std::atoi(optarg);
-            // polyG = boost::lexical_cast<int>(optarg);
-            break;
         case 'a':
             kmers = optarg;
             break;
@@ -189,12 +178,6 @@ int main(int argc, char ** argv)
             break;
         case 'o':
             out_dir = optarg;
-            break;
-        case 'c':
-            dust_cutoff = std::atoi(optarg);
-            break;
-        case 'k':
-            dust_k = std::atoi(optarg);
             break;
         case 'e':
             errors = std::atoi(optarg);
@@ -231,7 +214,7 @@ int main(int argc, char ** argv)
 
     init_type_names(length, polyG, dust_k, dust_cutoff);
 
-    build_patterns(kmers_f, polyG, patterns);
+    build_patterns(kmers_f, patterns);
 
     /*
     for (std::vector <std::string> ::iterator it = patterns.begin(); it != patterns.end(); ++it) {
