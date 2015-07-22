@@ -5,11 +5,10 @@
 #@author: Aleksey Komissarov
 #@contact: ad3002@gmail.com 
 
+import sys
 import argparse
 import os
-import sys
 import subprocess
-
 
 def run_asap(commands, cpu=10, mock=False):
     """
