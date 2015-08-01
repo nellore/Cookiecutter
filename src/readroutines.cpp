@@ -47,7 +47,7 @@ double get_mean_quality(std::string const & qual) {
     int val = 0;
     double size = 0;
     for (auto it = qual.begin(); it != qual.end(); ++it) {
-        val = (int)*it;
+        val = (int)*it - 33;
         sum += val;
         size += 1;
     }
