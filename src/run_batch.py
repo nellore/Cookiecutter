@@ -6,7 +6,7 @@
 #@contact: ad3002@gmail.com 
 
 import argparse
-import os
+import time
 import sys
 import subprocess
 
@@ -45,8 +45,14 @@ def run_asap(commands, cpu=10, mock=False):
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='Run analysis in parallel.')
-    parser.add_argument('-1','--fastq1', help='Comma-separated list of left fastq files', required=True)
-    parser.add_argument('-2','--fastq2', help='Comma-separated list of right fastq files', required=True)
+    parser.add_argument('-i', '--input', help='Comma-separated list '
+                                              'of single-end read '
+                                              'FASTQ files')
+    parser.add_argument('-1','--fastq1', help='Comma-separated list of left fastq files')
+    parser.add_argument('-2','--fastq2', help='Comma-separated list of right fastq files')
+    parser.add_argument('-s', '--single_end', action='store_true',
+                        help='input data are single-end reads',
+                        required=True)
     parser.add_argument('-c','--command', help='Cookiecutter subprogram', required=True)
     parser.add_argument('-o','--out', help='Output folder', required=True)
     parser.add_argument('-f','--fragments', help='Kmer library', required=True)
@@ -58,8 +64,14 @@ if __name__ == '__main__':
     parser.add_argument('-q','--mq', help='Mean read quality', required=False, default=20)
     args = vars(parser.parse_args())
 
-    fastq_files1 = args["fastq1"].split(",")
-    fastq_files2 = args["fastq2"].split(",")
+    fastq_files1 = fastq_files2 = fastq_files = []
+
+    if args['single_end']:
+        fastq_files = args["input"].split(",")
+    else:
+        fastq_files1 = args["fastq1"].split(",")
+        fastq_files2 = args["fastq2"].split(",")
+
     cpu = int(args["cpus"])
     out_folder = args["out"]
     command = args["command"]
@@ -79,28 +91,28 @@ if __name__ == '__main__':
         print("Unknow command. Avaiable: %s" % available_commands)
         sys.exit(2)
 
+    options = {
+        "command": command,
+        "out": out_folder,
+        "fragments": fragments,
+        }
+    command_options = "%(command)s -o %(out)s --fragments %(" \
+                      "fragments)s" % options
     commands = []
     for i in range(len(fastq_files1)):
-        data = {
-            "command": command,
-            "left": fastq_files1[i],
-            "right": fastq_files2[i],
-            "out": out_folder,
-            "fragments": fragments,
-            "polyG": polyG,
-            "length": length,
-            "dustcutoff": dustcutoff,
-            "dustk": dustk,
-            "mq": mq,
-        }
+        if args["single_end"]:
+            command_data = "-i {}".format(fastq_files[i])
+        else:
+            command_data = "-1 {} -2 {}".format(fastq_files1[i],
+                                                fastq_files2[i])
         if command == "rm_reads":
+            command_options += '--polyG {}'.format(polyG)
+            command_options += '--length {}'.format(length)
+            command_options += '--mq {}'.format(mq)
             if dustk and dustcutoff:
-                command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --dust_cutoff %(dustcutoff)s --dust_k %(dustk)s --mq %(mq)s" % data
-            else:
-                command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s  --polyG %(polyG)s --length %(length)s --mq %(mq)s" % data
-        else:   
-            command = "%(command)s -1 %(left)s -2 %(right)s -o %(out)s --fragments %(fragments)s" % data
-        commands.append(command)
+                command_options += '--dust_cutoff {}'.format(dustcutoff)
+                command_options += '--dust_k {}'.format(dustk)
+        commands.append(command_options + command_data)
 
     run_asap(commands, cpu=10, mock=False)
 
