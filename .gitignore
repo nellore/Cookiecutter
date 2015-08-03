@@ -22,3 +22,6 @@ rm_reads.includes
 # Doxygen documentation
 doc/*
 
+# IDE settings
+.idea/*
+
