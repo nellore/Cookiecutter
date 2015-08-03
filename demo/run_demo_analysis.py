@@ -70,7 +70,7 @@ if __name__ == '__main__':
     print command
     os.system(command)
 
-    command = "../src/extract -1 %(fastq1)s -2 %(fastq2)s -o %(" \
+    command = "../src/extractor -1 %(fastq1)s -2 %(fastq2)s -o %(" \
               "output_dir_1d)s --fragments ../data/mtdna.dat" % data
     print "Running analysis 1d (mtDNA extracting)..."
     print command
