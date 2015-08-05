@@ -177,18 +177,10 @@ int main(int argc, char ** argv)
         case 'o':
             out_dir = optarg;
             break;
-        case 'e':
-            errors = std::atoi(optarg);
-            break;
         case '?':
             print_help();
             return -1;
         }
-    }
-
-    if (errors < 0 || errors > 2) {
-        std::cout << "possible errors count are 0, 1, 2" << std::endl;
-        return -1;
     }
 
     if (kmers.empty() || out_dir.empty() || (
