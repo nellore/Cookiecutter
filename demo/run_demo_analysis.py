@@ -7,6 +7,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 
 if __name__ == '__main__':
@@ -40,44 +41,46 @@ if __name__ == '__main__':
         "transc_fastq": "../demo/SRR100173_1.fastq",
     }
 
-    commands = [
-        "make clean",
-        "make",
-    ]
+    try:
+        commands = [
+            ["make", "clean"],
+            ["make"],
+        ]
+        os.chdir("../src")
+        for command in commands:
+            print command
+            subprocess.check_call(command, shell=True)
+    except subprocess.CalledProcessError:
+        sys.stderr.write('failed to compile\n')
 
-    os.chdir("../src")
-    for command in commands:
-        print command
-        os.system(command)
+    command_names = dict(a='removing technical sequences',
+                         b='removing technical sequences and '
+                           'applying DUST filter',
+                         c='rRNA removing from transcriptome data',
+                         d='extracting mtDNA',
+                         e='removing alpha satDNA')
 
-    command = "../src/remove -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1a)s --fragments ../data/illumina.dat" % data
-    print "Running analysis 1a (technical sequences)..."
-    print command
-    os.system(command)
+    command_launches = dict(
+        a='../src/remove -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1a)s --fragments ../data/illumina.dat',
+        b='../src/rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1b)s --polyG 13 --length 50 --fragments '
+          '../data/illumina.dat --dust_cutoff 3 --dust_k 4',
+        c='../src/remove -i %(transc_fastq)s -o %(output_dir_1c)s '
+          '--fragments ../data/rdna.dat',
+        d='../src/extractor -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1d)s --fragments ../data/mtdna.dat',
+        e='../src/separate -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1e)s --fragments ../data/alpha.dat'
+    )
 
-    command = "../src/rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1b)s --polyG 13 --length 50 --fragments " \
-              "../data/illumina.dat --dust_cutoff 3 --dust_k 4" % data
-    print "Running analysis 1b (technical sequences and DUST filter)..."
-    print command
-    os.system(command)
-
-    command = "../src/remove -i %(transc_fastq)s -o " \
-              "%(output_dir_1c)s --fragments ../data/rdna.dat" % data
-    print "Running analysis 1c (rRNA removing from transcriptome " \
-          "data)..."
-    print command
-    os.system(command)
-
-    command = "../src/extractor -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1d)s --fragments ../data/mtdna.dat" % data
-    print "Running analysis 1d (mtDNA extracting)..."
-    print command
-    os.system(command)
-
-    command = "../src/separate -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1e)s --fragments ../data/alpha.dat" % data
-    print "Running analysis 1e (alpha satDNA removing)..."
-    print command
-    os.system(command)
+    for label in sorted(command_launches.iterkeys()):
+        command = command_launches[label]
+        print 'Running analysis 1{} ({})'.format(label,
+                                                 command_names[label])
+        print 'Command 1{}: {}'.format(label, command)
+        try:
+            subprocess.check_call(command % data, shell=True)
+            print 'Command 1{}: completed!'.format(label)
+        except subprocess.CalledProcessError:
+            print 'Command 1{}: failed!'.format(label)
