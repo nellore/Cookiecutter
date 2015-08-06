@@ -6,8 +6,10 @@
 
 import argparse
 import logging
+import re
 import subprocess
 import time
+from collections import defaultdict
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -122,6 +124,73 @@ class Separate(ParallelLauncher):
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
+
+
+def get_revcomp(seq):
+    """
+    Given a nucleotide sequence, return its reverse complement.
+
+    :param seq: a nucleotide sequence
+    :type seq: str
+    :return: a reverse complement of the specified sequence
+    :rtype: str
+    """
+    c = dict(zip('ATCGNatcgn[]', 'TAGCNtagcn]['))
+    return ''.join(c.get(nucleotide, '') for nucleotide in reversed(
+        seq))
+
+
+def sc_iter_fasta_brute(file_name):
+    """
+    Iterate over a FASTA file.
+
+    :param file_name: a name of a FASTA file
+    :type file_name: str
+    :return: a tuple of a sequence and its header
+    :rtype: tuple
+    """
+    seq_header = None
+    seq = []
+    with open(file_name) as file_handler:
+        data = file_handler.readlines()
+        for line in data:
+            if line.startswith(">"):
+                if seq:
+                    yield (seq_header, "".join(seq))
+                seq_header = line
+                seq = []
+                continue
+            seq.append(line)
+        if seq or seq_header:
+            yield (seq_header, "".join(seq))
+
+
+def create_kmer_file(fasta_name, output_name, kmer_length):
+    """
+    Write the list of all kmers of the specified length from the
+    specified input file to the given output file.
+
+    :param fasta_name: a name of a FASTA file from which sequences
+        k-mers will be obtained
+    :param output_name: a name of an output file where k-mers will be
+        written to
+    :param kmer_length: the length of obtained k-mers
+    :type fasta_name: str
+    :type output_name: str
+    :type kmer_length: int
+    """
+    kmers = defaultdict(int)
+    for header, sequence in sc_iter_fasta_brute(fasta_name):
+        sequence = sequence.upper()
+        sequence = re.sub("\s+", "", sequence, re.S | re.M)
+        for i in xrange(0, len(sequence)-kmer_length+1):
+            kmer = sequence[i:i+kmer_length]
+            kmers[kmer] += 1
+            rkmer = get_revcomp(kmer)
+            kmers[rkmer] += 1
+    with open(output_name, "w") as fh:
+        for kmer in kmers:
+            fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
 
 
 def cookiecutter():
@@ -297,12 +366,15 @@ def cookiecutter():
                                        help='an output file of '
                                             'k-mers',
                                        required=True)
-    make_library_required.add_argument('-l', '--length',
+    make_library_required.add_argument('-l', '--length', type=int,
                                        help='the length of generated '
                                             'k-mers',
                                        required=True)
 
     args = parser.parse_args()
+
+    if args.command == 'make_library':
+        create_kmer_file(args.input, args.output, args.length)
 
 
 if __name__ == '__main__':
