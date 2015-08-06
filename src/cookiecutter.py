@@ -280,6 +280,28 @@ def cookiecutter():
     separate_required.add_argument('-o', '--output', required=True,
                                    help='a directory for output files')
 
+    # Parser for the make_library tool.
+
+    make_library_parser = subparsers.add_parser(
+        'make_library',
+        description='Create a library of k-mers from the specified '
+                    'FASTA file.'
+    )
+
+    make_library_required = make_library_parser.add_argument_group(
+        'required_arguments')
+    make_library_required.add_argument('-i', '--input',
+                                       help='a FASTA file',
+                                       required=True)
+    make_library_required.add_argument('-o', '--output',
+                                       help='an output file of '
+                                            'k-mers',
+                                       required=True)
+    make_library_required.add_argument('-l', '--length',
+                                       help='the length of generated '
+                                            'k-mers',
+                                       required=True)
+
     args = parser.parse_args()
 
 
