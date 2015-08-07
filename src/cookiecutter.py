@@ -38,12 +38,30 @@ class ParallelLauncher(object):
         self.__threads = threads
 
         # form a list of commands from the specified parameters.
-        self.__cmd_list = [self.__program + ' ' +
-                           map(lambda x: ' '.join(map(str, x)),
-                               files) +
-                           map(lambda x: ' '.join(map(str, x)),
-                               files.iteritems())
-                           for files in self.__input_files]
+        self.__cmd_list = []
+        cmd_template = [self.__program]
+        if args is not None:
+            for key, value in args.iteritems():
+                if isinstance(value, bool) and value:
+                    cmd_template.append(key)
+                else:
+                    cmd_template += [key, value]
+        cmd_template = ' '.join(cmd_template)
+        for i in input_files:
+            if len(i) == 2:
+                # we have got a pair of FASTQ file for paired-end reads
+                file_line = '-1 {} -2 {}'.format(*i)
+            else:
+                # we have got a single FASTQ file for single-end reads
+                file_line = '-i {}'.format(i)
+            self.__cmd_list.append(cmd_template + ' ' + file_line)
+
+    def print_commands(self):
+        """
+        Print commands to be launched.
+        """
+        for i in self.__cmd_list:
+            print i
 
     def launch(self):
         """
@@ -263,6 +281,10 @@ def cookiecutter():
                     'extraction tool.')
     subparsers = parser.add_subparsers(dest='command')
 
+    parser.add_argument('-e', '--echo', action='store_true',
+                        help='print commands to be launced instead of'
+                             'launching them')
+
     # Parser for the extractor tool
 
     extractor_parser = subparsers.add_parser(
@@ -279,15 +301,15 @@ def cookiecutter():
     extractor_io = extractor_required.add_mutually_exclusive_group(
         required=True
     )
-    extractor_io.add_argument('-i', '--input',
+    extractor_io.add_argument('-i', '--input', nargs='+',
                               default=argparse.SUPPRESS,
                               help='a FASTQ file of single-end reads')
-    extractor_io.add_argument('-1', '--fastq1',
+    extractor_io.add_argument('-1', '--fastq1', nargs='+',
                               default=argparse.SUPPRESS,
                               help='a FASTQ file of the first '
                                    'paired-end reads')
 
-    extractor_parser.add_argument('-2', '--fastq2',
+    extractor_parser.add_argument('-2', '--fastq2', nargs='+',
                                   default=argparse.SUPPRESS,
                                   help='a FASTQ file of the second '
                                        'paired-end reads')
@@ -319,15 +341,15 @@ def cookiecutter():
     remove_io = remove_required.add_mutually_exclusive_group(
         required=True
     )
-    remove_io.add_argument('-i', '--input',
+    remove_io.add_argument('-i', '--input', nargs='+',
                            default=argparse.SUPPRESS,
                            help='a FASTQ file of single-end reads')
-    remove_io.add_argument('-1', '--fastq1',
+    remove_io.add_argument('-1', '--fastq1', nargs='+',
                            default=argparse.SUPPRESS,
                            help='a FASTQ file of the first '
                                 'paired-end reads')
 
-    remove_parser.add_argument('-2', '--fastq2',
+    remove_parser.add_argument('-2', '--fastq2', nargs='+',
                                default=argparse.SUPPRESS,
                                help='a FASTQ file of the second '
                                     'paired-end reads')
@@ -362,15 +384,15 @@ def cookiecutter():
     rm_reads_io = rm_reads_required.add_mutually_exclusive_group(
         required=True
     )
-    rm_reads_io.add_argument('-i', '--input',
+    rm_reads_io.add_argument('-i', '--input', nargs='+',
                              default=argparse.SUPPRESS,
                              help='a FASTQ file of single-end reads')
-    rm_reads_io.add_argument('-1', '--fastq1',
+    rm_reads_io.add_argument('-1', '--fastq1', nargs='+',
                              default=argparse.SUPPRESS,
                              help='a FASTQ file of the first '
                                   'paired-end reads')
 
-    rm_reads_parser.add_argument('-2', '--fastq2',
+    rm_reads_parser.add_argument('-2', '--fastq2', nargs='+',
                                  default=argparse.SUPPRESS,
                                  help='a FASTQ file of the second '
                                       'paired-end reads')
@@ -423,15 +445,15 @@ def cookiecutter():
     separate_io = separate_required.add_mutually_exclusive_group(
         required=True
     )
-    separate_io.add_argument('-i', '--input',
+    separate_io.add_argument('-i', '--input', nargs='+',
                              default=argparse.SUPPRESS,
                              help='a FASTQ file of single-end reads')
-    separate_io.add_argument('-1', '--fastq1',
+    separate_io.add_argument('-1', '--fastq1', nargs='+',
                              default=argparse.SUPPRESS,
                              help='a FASTQ file of the first '
                                   'paired-end reads')
 
-    separate_parser.add_argument('-2', '--fastq2',
+    separate_parser.add_argument('-2', '--fastq2', nargs='+',
                                  default=argparse.SUPPRESS,
                                  help='a FASTQ file of the second '
                                       'paired-end reads')
@@ -472,6 +494,39 @@ def cookiecutter():
 
     if args.command == 'make_library':
         create_kmer_file(args.input, args.output, args.length)
+    else:
+        if 'input' in args:
+            input_files = args.input
+        else:
+            # check if the equal numbers of first and second FASTQ
+            # files were specified
+            if len(args.fastq1) == len(args.fastq2):
+                input_files = zip(args.fastq1, args.fastq2)
+            else:
+                logger.error('different paired FASTQ file numbers')
+                raise Exception('different paired FASTQ file numbers')
+        if args.command == 'extractor':
+            launcher = Extractor(input_files, args.fragments,
+                                 args.output, args.threads)
+        elif args.command == 'remove':
+            launcher = Remove(input_files, args.fragments,
+                              args.output, args.threads)
+        elif args.command == 'rm_reads':
+            launcher = RmReads(input_files, args.fragments,
+                               args.output, args.polygc, args.length,
+                               args.dust, args.dust_k,
+                               args.dust_cutoff, args.filterN,
+                               args.fragments)
+        elif args.command == 'separate':
+            launcher = Separate(input_files, args.fragments,
+                                args.output, args.threads)
+        else:
+            logger.error('unknown command %s', args.command)
+            raise Exception('unknown command')
+        if not args.echo:
+            launcher.launch()
+        else:
+            launcher.print_commands()
 
 
 if __name__ == '__main__':
