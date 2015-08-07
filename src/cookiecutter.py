@@ -6,13 +6,21 @@
 
 import argparse
 import logging
+import os
+import os.path
 import re
 import subprocess
+import sys
 import time
 from collections import defaultdict
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
+
+program_names = dict(extractor='extractor',
+                     remove='remove',
+                     rm_reads='rm_reads',
+                     separate='separate')
 
 
 class ParallelLauncher(object):
@@ -111,7 +119,7 @@ class Extractor(ParallelLauncher):
         :type threads: int
         """
         super(Extractor, self).__init__(
-            'extractor', files,
+            program_names['extractor'], files,
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
@@ -135,7 +143,7 @@ class Remove(ParallelLauncher):
         :type threads: int
         """
         super(Remove, self).__init__(
-            'remove', files,
+            program_names['remove'], files,
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
@@ -173,7 +181,7 @@ class RmReads(ParallelLauncher):
         :type threads: int
         """
         super(RmReads, self).__init__(
-            'rm_reads', files,
+            program_names['rm_reads'], files,
             dict(zip('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
                  (fragments, output, polygc, length, dust, dust_k,
                   dust_cutoff, filter_n)),
@@ -199,7 +207,7 @@ class Separate(ParallelLauncher):
         :type threads: int
         """
         super(Separate, self).__init__(
-            'separate', files,
+            program_names['separate'], files,
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
@@ -270,6 +278,18 @@ def create_kmer_file(fasta_name, output_name, kmer_length):
     with open(output_name, "w") as fh:
         for kmer in kmers:
             fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
+
+
+def verify_binaries():
+    """
+    Check if Cookiecutter binaries are present in the same directory
+    that contains the wrapper script.
+    """
+    for i in program_names.itervalues():
+        path = os.path.join(os.path.curdir, i)
+        if not os.path.isfile(path) or not os.access(path, os.X_OK):
+            return False
+    return True
 
 
 def cookiecutter():
@@ -530,4 +550,8 @@ def cookiecutter():
 
 
 if __name__ == '__main__':
+    if not verify_binaries():
+        sys.stderr.write('missing Cookiecutter binaries, please run '
+                         'make\n')
+        sys.exit(1)
     cookiecutter()
