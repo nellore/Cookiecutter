@@ -80,6 +80,18 @@ class Extractor(ParallelLauncher):
     Launch the extractor tool.
     """
     def __init__(self, files, fragments, output, threads):
+        """
+        Create the extractor tool launcher object.
+
+        :param files: a list of lists of input file names
+        :param fragments: a name of a file with fragment k-mers
+        :param output: a name of an output file
+        :param threads: the number of parallel threads to be launched
+        :type files: list
+        :type fragments: str
+        :type output: str
+        :type threads: int
+        """
         super(Extractor, self).__init__(
             'extractor', files,
             dict(zip(('-f', '-o'), (fragments, output))),
@@ -92,6 +104,18 @@ class Remove(ParallelLauncher):
     Launch the remove tool.
     """
     def __init__(self, files, fragments, output, threads):
+        """
+        Create the remove tool launcher object.
+
+        :param files: a list of lists of input file names
+        :param fragments: a name of a file with fragment k-mers
+        :param output: a name of an output file
+        :param threads: the number of parallel threads to be launched
+        :type files: list
+        :type fragments: str
+        :type output: str
+        :type threads: int
+        """
         super(Remove, self).__init__(
             'remove', files,
             dict(zip(('-f', '-o'), (fragments, output))),
@@ -101,10 +125,35 @@ class Remove(ParallelLauncher):
 
 class RmReads(ParallelLauncher):
     """
-    Launch the rn_reads tool.
+    Launch the rm_reads tool.
     """
     def __init__(self, files, fragments, output, polygc, length,
                  dust, dust_k, dust_cutoff, filter_n, threads):
+        """
+        Create the rm_reads tool launcher object.
+
+        :param files: a list of lists of input file names
+        :param fragments: a name of a file with fragment k-mers
+        :param output: a name of an output file
+        :param polygc: the polyG/polyC fragment length cutoff
+        :param length: the read length cutoff
+        :param dust: whether apply or not the DUST filter
+        :param dust_k: the DUST window size
+        :param dust_cutoff: the DUST score cutoff
+        :param filter_n: whether filter or not reads by the presence
+            of unknown nucleotides
+        :param threads: the number of parallel threads to be launched
+        :type files: list
+        :type fragments: str
+        :type output: str
+        :type polygc: int
+        :type length: int
+        :type dust: bool
+        :type dust_k: int
+        :type dust_cutoff: int
+        :type filter_n: bool
+        :type threads: int
+        """
         super(RmReads, self).__init__(
             'rm_reads', files,
             dict(zip('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
@@ -119,6 +168,18 @@ class Separate(ParallelLauncher):
     Launch the separate tool.
     """
     def __init__(self, files, fragments, output, threads):
+        """
+        Create the separate tool launcher object.
+
+        :param files: a list of lists of input file names
+        :param fragments: a name of a file with fragment k-mers
+        :param output: a name of an output file
+        :param threads: the number of parallel threads to be launched
+        :type files: list
+        :type fragments: str
+        :type output: str
+        :type threads: int
+        """
         super(Separate, self).__init__(
             'separate', files,
             dict(zip(('-f', '-o'), (fragments, output))),
