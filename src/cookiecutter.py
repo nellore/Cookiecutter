@@ -226,6 +226,11 @@ def cookiecutter():
     extractor_parser.add_argument('-2', '--fastq2',
                                   help='a FASTQ file of the second '
                                        'paired-end reads')
+    extractor_parser.add_argument('-t', '--threads', type=int,
+                                  default=1,
+                                  help='the number of threads for '
+                                       'parallel processing of '
+                                       'multiple input files')
     extractor_required.add_argument('-f', '--fragments', required=True,
                                     help='a file of k-mers')
     extractor_required.add_argument('-o', '--output', required=True,
@@ -255,6 +260,10 @@ def cookiecutter():
     remove_parser.add_argument('-2', '--fastq2',
                                help='a FASTQ file of the second '
                                     'paired-end reads')
+    remove_parser.add_argument('-t', '--threads', type=int, default=1,
+                               help='the number of threads for '
+                                    'parallel processing of multiple '
+                                    'input files')
     remove_required.add_argument('-f', '--fragments', required=True,
                                  help='a file of k-mers')
     remove_required.add_argument('-o', '--output', required=True,
@@ -292,6 +301,11 @@ def cookiecutter():
                                  default=argparse.SUPPRESS,
                                  help='a FASTQ file of the second '
                                       'paired-end reads')
+    rm_reads_parser.add_argument('-t', '--threads', type=int,
+                                 default=1,
+                                 help='the number of threads for '
+                                      'parallel processing of '
+                                      'multiple input files')
     rm_reads_parser.add_argument('-p', '--polygc', type=int,
                                  default=13,
                                  help='the polyG/polyC sequence '
@@ -344,6 +358,10 @@ def cookiecutter():
     separate_parser.add_argument('-2', '--fastq2',
                                  help='a FASTQ file of the second '
                                       'paired-end reads')
+    separate_parser.add_argument('-t', '--threads', type=int, default=1,
+                                 help='the number of threads for '
+                                      'parallel processing of '
+                                      'multiple input files')
     separate_required.add_argument('-f', '--fragments', required=True,
                                    help='a file of k-mers')
     separate_required.add_argument('-o', '--output', required=True,
