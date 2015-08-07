@@ -208,7 +208,8 @@ def cookiecutter():
         'extractor',
         description='Extracts reads according to a given list of '
                     'kmers and outputs only the reads that matched '
-                    'the list.'
+                    'the list.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     extractor_required = extractor_parser.add_argument_group(
@@ -218,12 +219,15 @@ def cookiecutter():
         required=True
     )
     extractor_io.add_argument('-i', '--input',
+                              default=argparse.SUPPRESS,
                               help='a FASTQ file of single-end reads')
     extractor_io.add_argument('-1', '--fastq1',
+                              default=argparse.SUPPRESS,
                               help='a FASTQ file of the first '
                                    'paired-end reads')
 
     extractor_parser.add_argument('-2', '--fastq2',
+                                  default=argparse.SUPPRESS,
                                   help='a FASTQ file of the second '
                                        'paired-end reads')
     extractor_parser.add_argument('-t', '--threads', type=int,
@@ -232,8 +236,10 @@ def cookiecutter():
                                        'parallel processing of '
                                        'multiple input files')
     extractor_required.add_argument('-f', '--fragments', required=True,
+                                    default=argparse.SUPPRESS,
                                     help='a file of k-mers')
     extractor_required.add_argument('-o', '--output', required=True,
+                                    default=argparse.SUPPRESS,
                                     help='a directory for output files')
 
     # Parser for the remove tool.
@@ -242,7 +248,8 @@ def cookiecutter():
         'remove',
         description='Removes reads according to a given list of kmers '
                     'and outputs only reads without any matches to '
-                    'the provided kmer list.'
+                    'the provided kmer list.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     remove_required = remove_parser.add_argument_group(
@@ -252,12 +259,15 @@ def cookiecutter():
         required=True
     )
     remove_io.add_argument('-i', '--input',
+                           default=argparse.SUPPRESS,
                            help='a FASTQ file of single-end reads')
     remove_io.add_argument('-1', '--fastq1',
+                           default=argparse.SUPPRESS,
                            help='a FASTQ file of the first '
                                 'paired-end reads')
 
     remove_parser.add_argument('-2', '--fastq2',
+                               default=argparse.SUPPRESS,
                                help='a FASTQ file of the second '
                                     'paired-end reads')
     remove_parser.add_argument('-t', '--threads', type=int, default=1,
@@ -265,8 +275,10 @@ def cookiecutter():
                                     'parallel processing of multiple '
                                     'input files')
     remove_required.add_argument('-f', '--fragments', required=True,
+                                 default=argparse.SUPPRESS,
                                  help='a file of k-mers')
     remove_required.add_argument('-o', '--output', required=True,
+                                 default=argparse.SUPPRESS,
                                  help='a directory for output files')
 
     # Parser for the rm_reads tool.
@@ -340,7 +352,8 @@ def cookiecutter():
     separate_parser = subparsers.add_parser(
         'separate',
         description='Outputs both matched and not matched '
-                    'reads in separate files.'
+                    'reads in separate files.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     separate_required = separate_parser.add_argument_group(
@@ -350,12 +363,15 @@ def cookiecutter():
         required=True
     )
     separate_io.add_argument('-i', '--input',
+                             default=argparse.SUPPRESS,
                              help='a FASTQ file of single-end reads')
     separate_io.add_argument('-1', '--fastq1',
+                             default=argparse.SUPPRESS,
                              help='a FASTQ file of the first '
                                   'paired-end reads')
 
     separate_parser.add_argument('-2', '--fastq2',
+                                 default=argparse.SUPPRESS,
                                  help='a FASTQ file of the second '
                                       'paired-end reads')
     separate_parser.add_argument('-t', '--threads', type=int, default=1,
@@ -363,8 +379,10 @@ def cookiecutter():
                                       'parallel processing of '
                                       'multiple input files')
     separate_required.add_argument('-f', '--fragments', required=True,
+                                   default=argparse.SUPPRESS,
                                    help='a file of k-mers')
     separate_required.add_argument('-o', '--output', required=True,
+                                   default=argparse.SUPPRESS,
                                    help='a directory for output files')
 
     # Parser for the make_library tool.
