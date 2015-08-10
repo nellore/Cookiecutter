@@ -44,7 +44,11 @@ install:
 	cp separate $(PREFIX)/bin/separate
 	cp extractor $(PREFIX)/bin/extractor
 	cp remove $(PREFIX)/bin/remove
+	cp cookiecutter $(PREFIX)/bin/cookiecutter
+	chmod +x $(PREFIX)/bin/cookiecutter 
 
 uninstall:
-	rm $(PREFIX)/bin/rm_reads $(PREFIX)/bin/extractor $(PREFIX)/bin/remove $(PREFIX)/bin/separate
+	rm $(PREFIX)/bin/rm_reads $(PREFIX)/bin/extractor \
+		$(PREFIX)/bin/remove $(PREFIX)/bin/separate \
+		$(PREFIX)/bin/cookiecutter
 
