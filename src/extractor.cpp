@@ -79,7 +79,7 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & bad_f,
 
         processed += 1;
         if (processed % 1000000 == 0) {
-            std::cout << "Processed: " << processed << std::endl;
+            std::cerr << "Processed: " << processed << std::endl;
         }
     }
 }
@@ -134,7 +134,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 
         processed += 1;
         if (processed % 1000000 == 0) {
-            std::cout << "Processed: " << processed << std::endl;
+            std::cerr << "Processed: " << processed << std::endl;
         }
     }
 }
@@ -142,7 +142,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e errors" << std::endl;
+    std::cerr << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e errors" << std::endl;
 }
 
 /*! \brief The main function of the **extract** tool. */
@@ -191,44 +191,44 @@ int main(int argc, char ** argv)
     }
     
     if (!verify_directory(out_dir)) {
-        std::cout << "Output directory does not exist, failed to create" << std::endl;
+        std::cerr << "Output directory does not exist, failed to create" << std::endl;
         return -1;
     }
 
     std::ifstream kmers_f (kmers.c_str());
     if (!kmers_f.good()) {
-        std::cout << "Cannot open kmers file" << std::endl;
+        std::cerr << "Cannot open kmers file" << std::endl;
         print_help();
         return -1;
     }
 
-    std::cout << "Building patterns..." << std::endl;
+    std::cerr << "Building patterns..." << std::endl;
     build_patterns(kmers_f, patterns);
 
     if (patterns.empty()) {
-        std::cout << "patterns are empty" << std::endl;
+        std::cerr << "patterns are empty" << std::endl;
         return -1;
     }
 
-    std::cout << "Building trie..." << std::endl;
+    std::cerr << "Building trie..." << std::endl;
     build_trie(root, patterns, errors);
 	add_failures(root);
 
 
-    std::cout << "Iterate reads..." << std::endl;
+    std::cerr << "Iterate reads..." << std::endl;
     if (!reads.empty()) {
         std::string reads_base = basename(reads);
         std::ifstream reads_f (reads.c_str());
         std::ofstream bad_f((out_dir + "/" + reads_base + ".filtered.fastq").c_str(), std::ofstream::out);
 
         if (!reads_f.good()) {
-            std::cout << "Cannot open reads file" << std::endl;
+            std::cerr << "Cannot open reads file" << std::endl;
             print_help();
             return -1;
         }
 
         if (!bad_f.good()) {
-            std::cout << "Cannot open output file" << std::endl;
+            std::cerr << "Cannot open output file" << std::endl;
             print_help();
             return -1;
         }
@@ -261,22 +261,22 @@ int main(int argc, char ** argv)
         std::ofstream bad2_f(file_name_bad2.c_str(),
                             std::ofstream::out);
 
-        std::cout << "Created output files:" << std::endl;
-        std::cout << "\t" << file_name_se1 << std::endl;
-        std::cout << "\t" << file_name_se2 << std::endl;
-        std::cout << "\t" << file_name_bad1 << std::endl;
-        std::cout << "\t" << file_name_bad2 << std::endl;
+        std::cerr << "Created output files:" << std::endl;
+        std::cerr << "\t" << file_name_se1 << std::endl;
+        std::cerr << "\t" << file_name_se2 << std::endl;
+        std::cerr << "\t" << file_name_bad1 << std::endl;
+        std::cerr << "\t" << file_name_bad2 << std::endl;
 
 
         if (!reads1_f.good() || !reads2_f.good()) {
-            std::cout << "reads file is bad" << std::endl;
+            std::cerr << "reads file is bad" << std::endl;
             print_help();
             return -1;
         }
 
         if (!bad1_f.good() || !bad2_f.good() ||
                 !se1_f.good() || !se2_f.good()) {
-            std::cout << "out file is bad" << std::endl;
+            std::cerr << "out file is bad" << std::endl;
             print_help();
             return -1;
         }

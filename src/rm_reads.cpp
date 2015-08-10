@@ -143,7 +143,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cout << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
+    std::cerr << "./rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
 }
 
 /*! \brief The main function of the **rm_reads** tool. */
@@ -207,7 +207,7 @@ int main(int argc, char ** argv)
     }
 
     if (errors < 0 || errors > 2) {
-        std::cout << "possible errors count are 0, 1, 2" << std::endl;
+        std::cerr << "possible errors count are 0, 1, 2" << std::endl;
         return -1;
     }
 
@@ -219,13 +219,13 @@ int main(int argc, char ** argv)
     }
     
     if (!verify_directory(out_dir)) {
-        std::cout << "Output directory does not exist, failed to create" << std::endl;
+        std::cerr << "Output directory does not exist, failed to create" << std::endl;
         return -1;
     }
 
     std::ifstream kmers_f (kmers.c_str());
     if (!kmers_f.good()) {
-        std::cout << "Cannot open kmers file" << std::endl;
+        std::cerr << "Cannot open kmers file" << std::endl;
         print_help();
         return -1;
     }
@@ -241,11 +241,11 @@ int main(int argc, char ** argv)
     */
 
     if (patterns.empty()) {
-        std::cout << "patterns are empty" << std::endl;
+        std::cerr << "patterns are empty" << std::endl;
         return -1;
     }
 
-    std::cout << "Building trie..." << std::endl;
+    std::cerr << "Building trie..." << std::endl;
     build_trie(root, patterns, errors);
 	add_failures(root);
 
@@ -256,13 +256,13 @@ int main(int argc, char ** argv)
         std::ofstream bad_f((out_dir + "/" + reads_base + ".filtered.fastq").c_str(), std::ofstream::out);
 
         if (!reads_f.good()) {
-            std::cout << "Cannot open reads file" << std::endl;
+            std::cerr << "Cannot open reads file" << std::endl;
             print_help();
             return -1;
         }
 
         if (!ok_f.good() || !bad_f.good()) {
-            std::cout << "Cannot open output file" << std::endl;
+            std::cerr << "Cannot open output file" << std::endl;
             print_help();
             return -1;
         }
@@ -295,14 +295,14 @@ int main(int argc, char ** argv)
                             std::ofstream::out);
 
         if (!reads1_f.good() || !reads2_f.good()) {
-            std::cout << "reads file is bad" << std::endl;
+            std::cerr << "reads file is bad" << std::endl;
             print_help();
             return -1;
         }
 
         if (!ok1_f.good() || !ok2_f.good() || !bad1_f.good() || !bad2_f.good() ||
                 !se1_f.good() || !se2_f.good()) {
-            std::cout << "out file is bad" << std::endl;
+            std::cerr << "out file is bad" << std::endl;
             print_help();
             return -1;
         }
