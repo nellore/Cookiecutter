@@ -667,8 +667,8 @@ def cookiecutter():
 
 if __name__ == '__main__':
     if not verify_binaries():
-        sys.stderr.write('missing Cookiecutter binaries, please run '
-                         'make\n')
+        sys.stderr.write('missing Cookiecutter binaries, please '
+                         'reinstall the program\n')
         sys.exit(1)
     try:
         cookiecutter()
