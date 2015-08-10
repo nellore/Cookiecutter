@@ -23,6 +23,10 @@ program_names = dict(extractor='extractor',
                      separate='separate')
 
 
+class CookiecutterError(Exception):
+    pass
+
+
 class ParallelLauncher(object):
     """
     Run a program with the specified parameters in the parallel mode.
@@ -50,10 +54,11 @@ class ParallelLauncher(object):
         cmd_template = [self.__program]
         if args is not None:
             for key, value in args.iteritems():
-                if isinstance(value, bool) and value:
-                    cmd_template.append(key)
+                if isinstance(value, bool):
+                    if value:
+                        cmd_template.append(key)
                 else:
-                    cmd_template += [key, value]
+                    cmd_template += [key, str(value)]
         cmd_template = ' '.join(cmd_template)
         for i in input_files:
             if len(i) == 2:
@@ -63,6 +68,40 @@ class ParallelLauncher(object):
                 # we have got a single FASTQ file for single-end reads
                 file_line = '-i {}'.format(i)
             self.__cmd_list.append(cmd_template + ' ' + file_line)
+
+    @property
+    def program(self):
+        return self.__program
+
+    @property
+    def input_files(self):
+        return self.__input_files
+
+    @property
+    def args(self):
+        return self.__args
+
+    @property
+    def threads(self):
+        return self.__threads
+
+    def check_parameters(self):
+        """
+        Check the specified launcher parameters.
+        """
+        # check input files
+        for i in self.input_files:
+            if not isinstance(i, tuple):
+                i = (i,)
+            for j in i:
+                if not os.path.isfile(j):
+                    raise CookiecutterError('incorrect input file {'
+                                            '}'.format(j))
+
+        # check the number of threads
+        if self.threads < 1:
+            raise CookiecutterError('incorrect number of threads {'
+                                    '}'.format(self.__threads))
 
     def print_commands(self):
         """
@@ -101,7 +140,46 @@ class ParallelLauncher(object):
             logger.info('new command launched: %s', curr_cmd)
 
 
-class Extractor(ParallelLauncher):
+class CookiecutterLauncher(ParallelLauncher):
+    """
+    This class contains the procedure to check the file of fragments
+    and the output directory.
+    """
+    def check_parameters(self):
+        """
+        In addition to input file names, check also the name of a
+        fragment file and the name of an output directory. If the
+        specified output directory does not exist, then create it.
+        """
+        super(CookiecutterLauncher, self).check_parameters()
+
+        # check if the fragment file and the output directory are
+        # specified among the launcher arguments
+        if '-f' not in self.args:
+            raise Exception('fragment file name missing')
+        elif not os.path.isfile(self.args['-f']):
+            raise Exception('incorrect fragment file {}'.format(
+                self.args['-f']))
+
+        # check the output directory
+        if '-o' not in self.args:
+            raise Exception('output directory name missing')
+        elif not os.path.isdir(self.args['-o']):
+            # if the specified directory does not exist, then create it
+            try:
+                os.makedirs(self.args['-o'])
+            except os.error:
+                raise CookiecutterError(
+                    'could not create output directory {}'.format(
+                        self.args['-o']))
+
+        if not os.access(self.args['-o'], os.W_OK):
+            raise CookiecutterError(
+                'can not write to output directory {}'.format(
+                    self.args['-o']))
+
+
+class Extractor(CookiecutterLauncher):
     """
     Launch the extractor tool.
     """
@@ -124,8 +202,16 @@ class Extractor(ParallelLauncher):
             threads
         )
 
+        self.check_parameters()
 
-class Remove(ParallelLauncher):
+    def check_parameters(self):
+        """
+        Check parameter values.
+        """
+        super(Extractor, self).check_parameters()
+
+
+class Remove(CookiecutterLauncher):
     """
     Launch the remove tool.
     """
@@ -147,6 +233,14 @@ class Remove(ParallelLauncher):
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
+
+        self.check_parameters()
+
+    def check_parameters(self):
+        """
+        Check parameter values.
+        """
+        super(Remove, self).check_parameters()
 
 
 class RmReads(ParallelLauncher):
@@ -182,11 +276,25 @@ class RmReads(ParallelLauncher):
         """
         super(RmReads, self).__init__(
             program_names['rm_reads'], files,
-            dict(zip('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
+            dict(zip(('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
                  (fragments, output, polygc, length, dust, dust_k,
-                  dust_cutoff, filter_n)),
+                  dust_cutoff, filter_n))),
             threads
         )
+
+        self.check_parameters()
+
+    def check_parameters(self):
+        """
+        Check parameter values.
+        """
+        super(RmReads, self).check_parameters()
+
+        # check parameters which values must be positive numbers
+        for par_value in ('-p', '-l', '-k', '-c'):
+            if self.args[par_value] < 1:
+                raise CookiecutterError('incorrect {} value {}'.format(
+                    par_value, self.args[par_value]))
 
 
 class Separate(ParallelLauncher):
@@ -211,6 +319,14 @@ class Separate(ParallelLauncher):
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
+
+        self.check_parameters()
+
+    def check_parameters(self):
+        """
+        Check parameter values.
+        """
+        super(Separate, self).check_parameters()
 
 
 def get_revcomp(seq):
@@ -520,11 +636,12 @@ def cookiecutter():
         else:
             # check if the equal numbers of first and second FASTQ
             # files were specified
-            if len(args.fastq1) == len(args.fastq2):
+            if hasattr(args, 'fastq2') and len(args.fastq1) == len(
+                    args.fastq2):
                 input_files = zip(args.fastq1, args.fastq2)
             else:
-                logger.error('different paired FASTQ file numbers')
-                raise Exception('different paired FASTQ file numbers')
+                raise CookiecutterError('different paired FASTQ file '
+                                        'numbers')
         if args.command == 'extractor':
             launcher = Extractor(input_files, args.fragments,
                                  args.output, args.threads)
@@ -541,8 +658,7 @@ def cookiecutter():
             launcher = Separate(input_files, args.fragments,
                                 args.output, args.threads)
         else:
-            logger.error('unknown command %s', args.command)
-            raise Exception('unknown command')
+            raise CookiecutterError('unknown command')
         if not args.echo:
             launcher.launch()
         else:
@@ -554,4 +670,7 @@ if __name__ == '__main__':
         sys.stderr.write('missing Cookiecutter binaries, please run '
                          'make\n')
         sys.exit(1)
-    cookiecutter()
+    try:
+        cookiecutter()
+    except CookiecutterError as e:
+        sys.stderr.write(e.message + '\n')
