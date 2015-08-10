@@ -157,14 +157,14 @@ int main(int argc, char ** argv)
     int errors = 0;
 
     const struct option long_options[] = {
-        {"fragments",required_argument,NULL,'a'},
+        {"fragments",required_argument,NULL,'f'},
         {"errors",required_argument,NULL,'e'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:a:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:f:i:o:e:", long_options, NULL)) != -1) {
         switch (rez) {
-        case 'a':
+        case 'f':
             kmers = optarg;
             break;
         case 'i':

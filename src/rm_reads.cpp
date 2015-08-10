@@ -163,14 +163,14 @@ int main(int argc, char ** argv)
 
     const struct option long_options[] = {
         {"length",required_argument,NULL,'l'},
-        {"polyG",required_argument,NULL,'p'},
-        {"fragments",required_argument,NULL,'a'},
+        {"polygc",required_argument,NULL,'p'},
+        {"fragments",required_argument,NULL,'f'},
         {"dust_k",required_argument,NULL,'k'},
         {"dust_cutoff",required_argument,NULL,'c'},
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:a:i:o:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:l:p:f:i:o:c:k", long_options, NULL)) != -1) {
         switch (rez) {
         case 'l':
             length = std::atoi(optarg);
@@ -179,7 +179,7 @@ int main(int argc, char ** argv)
             polyG = std::atoi(optarg);
             // polyG = boost::lexical_cast<int>(optarg);
             break;
-        case 'a':
+        case 'f':
             kmers = optarg;
             break;
         case 'i':
