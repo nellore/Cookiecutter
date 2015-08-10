@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:f:i:o:e:", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:f:i:o:", long_options, NULL)) != -1) {
         switch (rez) {
         case 'f':
             kmers = optarg;
