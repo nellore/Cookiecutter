@@ -402,7 +402,8 @@ def verify_binaries():
     that contains the wrapper script.
     """
     for i in program_names.itervalues():
-        path = os.path.join(os.path.curdir, i)
+        path = os.path.join(os.path.dirname(os.path.realpath(
+            __file__)), i)
         if not os.path.isfile(path) or not os.access(path, os.X_OK):
             return False
     return True
