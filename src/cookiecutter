@@ -368,29 +368,30 @@ def sc_iter_fasta_brute(file_name):
             yield (seq_header, "".join(seq))
 
 
-def create_kmer_file(fasta_name, output_name, kmer_length):
+def create_kmer_file(fasta_names, output_name, kmer_length):
     """
     Write the list of all kmers of the specified length from the
     specified input file to the given output file.
 
-    :param fasta_name: a name of a FASTA file from which sequences
-        k-mers will be obtained
+    :param fasta_names: a list of names of FASTA files from which
+        sequences k-mers will be obtained
     :param output_name: a name of an output file where k-mers will be
         written to
     :param kmer_length: the length of obtained k-mers
-    :type fasta_name: str
+    :type fasta_names: list
     :type output_name: str
     :type kmer_length: int
     """
     kmers = defaultdict(int)
-    for header, sequence in sc_iter_fasta_brute(fasta_name):
-        sequence = sequence.upper()
-        sequence = re.sub("\s+", "", sequence, re.S | re.M)
-        for i in xrange(0, len(sequence)-kmer_length+1):
-            kmer = sequence[i:i+kmer_length]
-            kmers[kmer] += 1
-            rkmer = get_revcomp(kmer)
-            kmers[rkmer] += 1
+    for i in fasta_names:
+        for header, sequence in sc_iter_fasta_brute(i):
+            sequence = sequence.upper()
+            sequence = re.sub("\s+", "", sequence, re.S | re.M)
+            for i in xrange(0, len(sequence)-kmer_length+1):
+                kmer = sequence[i:i+kmer_length]
+                kmers[kmer] += 1
+                rkmer = get_revcomp(kmer)
+                kmers[rkmer] += 1
     with open(output_name, "w") as fh:
         for kmer in kmers:
             fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
@@ -615,8 +616,8 @@ def cookiecutter():
 
     make_library_required = make_library_parser.add_argument_group(
         'required_arguments')
-    make_library_required.add_argument('-i', '--input',
-                                       help='a FASTA file',
+    make_library_required.add_argument('-i', '--input', nargs='+',
+                                       help='a list of FASTA files',
                                        required=True)
     make_library_required.add_argument('-o', '--output',
                                        help='an output file of '
