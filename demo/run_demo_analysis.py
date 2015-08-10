@@ -25,10 +25,6 @@ if __name__ == '__main__':
     fastq_file1 = args["fastq1"]
     fastq_file2 = args["fastq2"]
 
-    if not os.path.isdir("../src"):
-        print "Please, run demo script from demo directory."
-        sys.exit(2)
-
     data = {
         "fastq1": fastq_file1,
         "fastq2": fastq_file2,
@@ -40,44 +36,34 @@ if __name__ == '__main__':
         "transc_fastq": "../demo/SRR100173_1.fastq",
     }
 
-    commands = [
-        "make clean",
-        "make",
-    ]
-
-    os.chdir("../src")
-    for command in commands:
-        print command
-        os.system(command)
-
-    command = "../src/remove -1 %(fastq1)s -2 %(fastq2)s -o %(" \
+    command = "cookiecutter remove -1 %(fastq1)s -2 %(fastq2)s -o %(" \
               "output_dir_1a)s --fragments ../data/illumina.dat" % data
     print "Running analysis 1a (technical sequences)..."
     print command
     os.system(command)
 
-    command = "../src/rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1b)s --polyG 13 --length 50 --fragments " \
+    command = "cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o " \
+              "%(output_dir_1b)s --polygc 13 --length 50 --fragments " \
               "../data/illumina.dat --dust_cutoff 3 --dust_k 4" % data
     print "Running analysis 1b (technical sequences and DUST filter)..."
     print command
     os.system(command)
 
-    command = "../src/remove -i %(transc_fastq)s -o " \
+    command = "cookiecutter remove -i %(transc_fastq)s -o " \
               "%(output_dir_1c)s --fragments ../data/rdna.dat" % data
     print "Running analysis 1c (rRNA removing from transcriptome " \
           "data)..."
     print command
     os.system(command)
 
-    command = "../src/extractor -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1d)s --fragments ../data/mtdna.dat" % data
+    command = "cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o " \
+              "%(output_dir_1d)s --fragments ../data/mtdna.dat" % data
     print "Running analysis 1d (mtDNA extracting)..."
     print command
     os.system(command)
 
-    command = "../src/separate -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1e)s --fragments ../data/alpha.dat" % data
+    command = "cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o " \
+              "%(output_dir_1e)s --fragments ../data/alpha.dat" % data
     print "Running analysis 1e (alpha satDNA removing)..."
     print command
     os.system(command)
