@@ -676,3 +676,4 @@ if __name__ == '__main__':
         cookiecutter()
     except CookiecutterError as e:
         sys.stderr.write(e.message + '\n')
+        sys.exit(1)

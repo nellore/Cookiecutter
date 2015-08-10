@@ -7,6 +7,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 
 if __name__ == '__main__':
@@ -36,34 +37,35 @@ if __name__ == '__main__':
         "transc_fastq": "../demo/SRR100173_1.fastq",
     }
 
-    command = "cookiecutter remove -1 %(fastq1)s -2 %(fastq2)s -o %(" \
-              "output_dir_1a)s --fragments ../data/illumina.dat" % data
-    print "Running analysis 1a (technical sequences)..."
-    print command
-    os.system(command)
 
-    command = "cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o " \
-              "%(output_dir_1b)s --polygc 13 --length 50 --fragments " \
-              "../data/illumina.dat --dust_cutoff 3 --dust_k 4" % data
-    print "Running analysis 1b (technical sequences and DUST filter)..."
-    print command
-    os.system(command)
+    command_names = dict(a='removing technical sequences',
+                         b='removing technical sequences and '
+                           'applying DUST filter',
+                         c='rRNA removing from transcriptome data',
+                         d='extracting mtDNA',
+                         e='removing alpha satDNA')
 
-    command = "cookiecutter remove -i %(transc_fastq)s -o " \
-              "%(output_dir_1c)s --fragments ../data/rdna.dat" % data
-    print "Running analysis 1c (rRNA removing from transcriptome " \
-          "data)..."
-    print command
-    os.system(command)
+    command_launches = dict(
+        a='cookiecutter remove -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1a)s --fragments ../data/illumina.dat',
+        b='cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1b)s --polygc 13 --length 50 --fragments '
+          '../data/illumina.dat --dust_cutoff 3 --dust_k 4',
+        c='cookiecutter remove -i %(transc_fastq)s -o %(output_dir_1c)s '
+          '--fragments ../data/rdna.dat',
+        d='cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1d)s --fragments ../data/mtdna.dat',
+        e='cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o %('
+          'output_dir_1e)s --fragments ../data/alpha.dat'
+    )
 
-    command = "cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o " \
-              "%(output_dir_1d)s --fragments ../data/mtdna.dat" % data
-    print "Running analysis 1d (mtDNA extracting)..."
-    print command
-    os.system(command)
-
-    command = "cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o " \
-              "%(output_dir_1e)s --fragments ../data/alpha.dat" % data
-    print "Running analysis 1e (alpha satDNA removing)..."
-    print command
-    os.system(command)
+    for label in sorted(command_launches.iterkeys()):
+        command = command_launches[label]
+        print 'Running analysis 1{} ({})'.format(label,
+                                                 command_names[label])
+        print 'Command 1{}: {}'.format(label, command % data)
+        try:
+            subprocess.check_call(command % data, shell=True)
+            print 'Command 1{}: completed!'.format(label)
+        except subprocess.CalledProcessError:
+            print 'Command 1{}: failed!'.format(label)

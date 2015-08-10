@@ -17,7 +17,6 @@ rm_reads.creator
 rm_reads.creator.user
 rm_reads.files
 rm_reads.includes
-*.fastq
 
 # Doxygen documentation
 doc/*
