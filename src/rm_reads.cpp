@@ -170,7 +170,7 @@ int main(int argc, char ** argv)
         {NULL,0,NULL,0}
     };
 
-    while ((rez = getopt_long(argc, argv, "1:2:l:p:f:i:o:c:k", long_options, NULL)) != -1) {
+    while ((rez = getopt_long(argc, argv, "1:2:l:p:f:i:o:c:k:", long_options, NULL)) != -1) {
         switch (rez) {
         case 'l':
             length = std::atoi(optarg);
