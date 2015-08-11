@@ -11,6 +11,7 @@ import os.path
 import re
 import subprocess
 import sys
+import textwrap
 import time
 from collections import defaultdict
 
@@ -679,8 +680,14 @@ def cookiecutter():
 
 if __name__ == '__main__':
     if not verify_binaries():
-        sys.stderr.write('missing Cookiecutter binaries, please '
-                         'reinstall the program\n')
+        message = 'Missing Cookiecutter binaries, please ' \
+            'install the program using \'make && make ' \
+            'install\' or launch it in the source ' \
+            'directory after running \'make\'. If you do not have ' \
+            'privileges to install to the system directory, you may ' \
+            'specify any other directory using PREFIX like ' \
+            '\'PREFIX=/my/dir make install\''
+        sys.stderr.write('\n'.join(textwrap.wrap(message)) + '\n')
         sys.exit(1)
     try:
         cookiecutter()

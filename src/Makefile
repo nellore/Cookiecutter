@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++0x -Wall -O2
-PREFIX ?= /usr/local
+PREFIX ?= /usr/local/bin
 
 OBJ = seq.o search.o stats.o fileroutines.o readroutines.o
 
@@ -40,15 +40,15 @@ clean:
 	rm *.o
 
 install:
-	cp rm_reads $(PREFIX)/bin/rm_reads
-	cp separate $(PREFIX)/bin/separate
-	cp extractor $(PREFIX)/bin/extractor
-	cp remove $(PREFIX)/bin/remove
-	cp cookiecutter $(PREFIX)/bin/cookiecutter
-	chmod +x $(PREFIX)/bin/cookiecutter 
+	cp rm_reads $(PREFIX)/rm_reads
+	cp separate $(PREFIX)/separate
+	cp extractor $(PREFIX)/extractor
+	cp remove $(PREFIX)/remove
+	cp cookiecutter $(PREFIX)/cookiecutter
+	chmod +x $(PREFIX)/cookiecutter 
 
 uninstall:
-	rm $(PREFIX)/bin/rm_reads $(PREFIX)/bin/extractor \
-		$(PREFIX)/bin/remove $(PREFIX)/bin/separate \
-		$(PREFIX)/bin/cookiecutter
+	rm $(PREFIX)/rm_reads $(PREFIX)/extractor \
+		$(PREFIX)/remove $(PREFIX)/separate \
+		$(PREFIX)/cookiecutter
 
