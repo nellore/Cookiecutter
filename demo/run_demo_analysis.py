@@ -59,7 +59,7 @@ if __name__ == '__main__':
         b='cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1b)s --polygc 13 --length 50 --fragments '
           '../data/illumina.dat --dust_cutoff 3 --dust_k 4',
-        c='cookiecutter remove -i %(transc_fastq)s -o %('
+        c='cookiecutter remove -i %(fastq1)s -o %('
           'output_dir_1c)s --fragments ../data/rdna.dat',
         d='cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1d)s --fragments ../data/mtdna.dat',
