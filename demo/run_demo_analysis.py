@@ -6,9 +6,12 @@
 # contact: ad3002@gmail.com
 
 import argparse
-import os
 import subprocess
-import sys
+
+col_blue = '\033[94m'
+col_green = '\033[92m'
+col_red = '\033[91m'
+col_end = '\033[0m'
 
 if __name__ == '__main__':
 
@@ -51,8 +54,8 @@ if __name__ == '__main__':
         b='cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1b)s --polygc 13 --length 50 --fragments '
           '../data/illumina.dat --dust_cutoff 3 --dust_k 4',
-        c='cookiecutter remove -i %(transc_fastq)s -o %(output_dir_1c)s '
-          '--fragments ../data/rdna.dat',
+        c='cookiecutter remove -i %(transc_fastq)s -o %('
+          'output_dir_1c)s --fragments ../data/rdna.dat',
         d='cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1d)s --fragments ../data/mtdna.dat',
         e='cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o %('
@@ -61,11 +64,15 @@ if __name__ == '__main__':
 
     for label in sorted(command_launches.iterkeys()):
         command = command_launches[label]
+        print col_blue + '-' * 72 + col_end
         print 'Running analysis 1{} ({})'.format(label,
                                                  command_names[label])
         print 'Command 1{}: {}'.format(label, command % data)
         try:
             subprocess.check_call(command % data, shell=True)
-            print 'Command 1{}: completed!'.format(label)
+            print 'Command 1{}: {}completed!{}'.format(label,
+                                                       col_green,
+                                                       col_end)
         except subprocess.CalledProcessError:
-            print 'Command 1{}: failed!'.format(label)
+            print 'Command 1{}: {}failed!{}'.format(label, col_red,
+                                                    col_end)
