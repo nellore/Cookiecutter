@@ -198,7 +198,7 @@ int main(int argc, char ** argv)
     }
     
     if (!verify_directory(out_dir)) {
-        std::сerr << "Output directory does not exist, failed to create" << std::endl;
+        std::cerr << "Output directory does not exist, failed to create" << std::endl;
         return -1;
     }
 
