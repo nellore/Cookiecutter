@@ -381,7 +381,7 @@ def sc_iter_fasta_brute(file_name):
 
 def create_kmer_file(fasta_names, output_name, kmer_length):
     """
-    Write the list of all kmers of the specified length from the
+    Write the list of all k-mers of the specified length from the
     specified input file to the given output file.
 
     :param fasta_names: a list of names of FASTA files from which
@@ -431,7 +431,7 @@ def cookiecutter():
     subparsers = parser.add_subparsers(dest='command')
 
     parser.add_argument('-e', '--echo', action='store_true',
-                        help='print commands to be launced instead of'
+                        help='print commands to be launched instead of '
                              'launching them')
 
     # Parser for the extractor tool
@@ -439,7 +439,7 @@ def cookiecutter():
     extractor_parser = subparsers.add_parser(
         'extractor',
         description='Extracts reads according to a given list of '
-                    'kmers and outputs only the reads that matched '
+                    'k-mers and outputs only the reads that matched '
                     'the list.',
         help='extract reads matching the specified k-mers',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -479,9 +479,9 @@ def cookiecutter():
 
     remove_parser = subparsers.add_parser(
         'remove',
-        description='Removes reads according to a given list of kmers '
+        description='Removes reads according to a given list of k-mers '
                     'and outputs only reads without any matches to '
-                    'the provided kmer list.',
+                    'the provided k-mer list.',
         help='remove reads matching the specified k-mers',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
