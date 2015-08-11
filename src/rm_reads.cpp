@@ -232,6 +232,7 @@ int main(int argc, char ** argv)
 
     init_type_names(length, polyG, dust_k, dust_cutoff);
 
+    std::cerr << "Building patterns..." << std::endl;
     build_patterns(kmers_f, polyG, patterns);
 
     /*
@@ -325,4 +326,6 @@ int main(int argc, char ** argv)
         reads1_f.close();
         reads2_f.close();
     }
+
+    return 0;
 }
