@@ -6,6 +6,8 @@
 # contact: ad3002@gmail.com
 
 import argparse
+import os.path
+import shutil
 import subprocess
 
 col_blue = '\033[94m'
@@ -24,10 +26,14 @@ if __name__ == '__main__':
     parser.add_argument('-2', '--fastq2', help='Right fastq file',
                         required=False,
                         default="../demo/ERR194147_subset_2.fastq")
-    args = vars(parser.parse_args())
 
-    fastq_file1 = args["fastq1"]
-    fastq_file2 = args["fastq2"]
+    parser.add_argument('-c', '--clear', action='store_true',
+                        help='remove files created by the demo')
+
+    args = parser.parse_args()
+
+    fastq_file1 = args.fastq1
+    fastq_file2 = args.fastq2
 
     data = {
         "fastq1": fastq_file1,
@@ -39,7 +45,6 @@ if __name__ == '__main__':
         "output_dir_1e": "../demo/temp_results_satDNA",
         "transc_fastq": "../demo/SRR100173_1.fastq",
     }
-
 
     command_names = dict(a='removing technical sequences',
                          b='removing technical sequences and '
@@ -76,3 +81,11 @@ if __name__ == '__main__':
         except subprocess.CalledProcessError:
             print 'Command 1{}: {}failed!{}'.format(label, col_red,
                                                     col_end)
+
+    if args.clear:
+        print col_blue + '-' * 72 + col_end
+        print 'Removing files created by demo...',
+        for i in data.iterkeys():
+            if i.startswith('output_dir_1') and os.path.isdir(data[i]):
+                shutil.rmtree(data[i])
+        print 'completed.'
