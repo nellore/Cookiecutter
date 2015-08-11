@@ -276,12 +276,20 @@ class RmReads(CookiecutterLauncher):
         :type filter_n: bool
         :type threads: int
         """
+        args = dict(zip(('-f', '-o', '-p', '-l', '-d', '-k', '-c',
+                         '-N'),
+                        (fragments, output, polygc, length, dust,
+                         dust_k, dust_cutoff, filter_n)))
+
+        # to turn off DUST masking, one should speficy 0 as the score
+        # cutoff ('-c') parameter
+
+        if not args['-d']:
+            args['-c'] = 0
+        del args['-d']
+
         super(RmReads, self).__init__(
-            program_names['rm_reads'], files,
-            dict(zip(('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
-                 (fragments, output, polygc, length, dust, dust_k,
-                  dust_cutoff, filter_n))),
-            threads
+            program_names['rm_reads'], files, args, threads
         )
 
         self.check_parameters()
