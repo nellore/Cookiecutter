@@ -61,7 +61,7 @@ if __name__ == '__main__':
           '../data/illumina.dat --dust_cutoff 3 --dust_k 4 --dust',
         c='cookiecutter remove -i %(fastq1)s -o %('
           'output_dir_1c)s --fragments ../data/rdna.dat',
-        d='cookiecutter extractor -1 %(fastq1)s -2 %(fastq2)s -o %('
+        d='cookiecutter extract -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1d)s --fragments ../data/mtdna.dat',
         e='cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1e)s --fragments ../data/alpha.dat'
