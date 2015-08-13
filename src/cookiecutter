@@ -11,6 +11,7 @@ import os.path
 import re
 import subprocess
 import sys
+import textwrap
 import time
 from collections import defaultdict
 
@@ -276,12 +277,20 @@ class RmReads(CookiecutterLauncher):
         :type filter_n: bool
         :type threads: int
         """
+        args = dict(zip(('-f', '-o', '-p', '-l', '-d', '-k', '-c',
+                         '-N'),
+                        (fragments, output, polygc, length, dust,
+                         dust_k, dust_cutoff, filter_n)))
+
+        # to turn off DUST masking, one should speficy 0 as the score
+        # cutoff ('-c') parameter
+
+        if not args['-d']:
+            args['-c'] = 0
+        del args['-d']
+
         super(RmReads, self).__init__(
-            program_names['rm_reads'], files,
-            dict(zip(('-f', '-o', '-p', '-l', '-d', '-k', '-c', '-N'),
-                 (fragments, output, polygc, length, dust, dust_k,
-                  dust_cutoff, filter_n))),
-            threads
+            program_names['rm_reads'], files, args, threads
         )
 
         self.check_parameters()
@@ -372,7 +381,7 @@ def sc_iter_fasta_brute(file_name):
 
 def create_kmer_file(fasta_names, output_name, kmer_length):
     """
-    Write the list of all kmers of the specified length from the
+    Write the list of all k-mers of the specified length from the
     specified input file to the given output file.
 
     :param fasta_names: a list of names of FASTA files from which
@@ -389,8 +398,8 @@ def create_kmer_file(fasta_names, output_name, kmer_length):
         for header, sequence in sc_iter_fasta_brute(i):
             sequence = sequence.upper()
             sequence = re.sub("\s+", "", sequence, re.S | re.M)
-            for i in xrange(0, len(sequence)-kmer_length+1):
-                kmer = sequence[i:i+kmer_length]
+            for j in xrange(0, len(sequence)-kmer_length+1):
+                kmer = sequence[j:j+kmer_length]
                 kmers[kmer] += 1
                 rkmer = get_revcomp(kmer)
                 kmers[rkmer] += 1
@@ -422,7 +431,7 @@ def cookiecutter():
     subparsers = parser.add_subparsers(dest='command')
 
     parser.add_argument('-e', '--echo', action='store_true',
-                        help='print commands to be launced instead of'
+                        help='print commands to be launched instead of '
                              'launching them')
 
     # Parser for the extractor tool
@@ -430,8 +439,9 @@ def cookiecutter():
     extractor_parser = subparsers.add_parser(
         'extractor',
         description='Extracts reads according to a given list of '
-                    'kmers and outputs only the reads that matched '
+                    'k-mers and outputs only the reads that matched '
                     'the list.',
+        help='extract reads matching the specified k-mers',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -469,9 +479,10 @@ def cookiecutter():
 
     remove_parser = subparsers.add_parser(
         'remove',
-        description='Removes reads according to a given list of kmers '
+        description='Removes reads according to a given list of k-mers '
                     'and outputs only reads without any matches to '
-                    'the provided kmer list.',
+                    'the provided k-mer list.',
+        help='remove reads matching the specified k-mers',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -515,6 +526,7 @@ def cookiecutter():
                     'nucleotides and filtering reads by their length; '
                     'also its output includes both filtered and '
                     'unfiltered reads.',
+        help='classify reads applying the specified filters',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -576,6 +588,8 @@ def cookiecutter():
         'separate',
         description='Outputs both matched and not matched '
                     'reads in separate files.',
+        help='separate reads matching or unmatching the specified '
+             'k-mers',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -613,7 +627,9 @@ def cookiecutter():
     make_library_parser = subparsers.add_parser(
         'make_library',
         description='Create a library of k-mers from the specified '
-                    'FASTA file.'
+                    'FASTA file.',
+        help='create a file of k-mers from sequences of the specified '
+             'FASTA file'
     )
 
     make_library_required = make_library_parser.add_argument_group(
@@ -671,8 +687,14 @@ def cookiecutter():
 
 if __name__ == '__main__':
     if not verify_binaries():
-        sys.stderr.write('missing Cookiecutter binaries, please '
-                         'reinstall the program\n')
+        message = 'Missing Cookiecutter binaries, please ' \
+            'install the program using \'make && make ' \
+            'install\' or launch it in the source ' \
+            'directory after running \'make\'. If you do not have ' \
+            'privileges to install to the system directory, you may ' \
+            'specify any other directory using PREFIX like ' \
+            '\'PREFIX=/my/dir make install\''
+        sys.stderr.write('\n'.join(textwrap.wrap(message)) + '\n')
         sys.exit(1)
     try:
         cookiecutter()

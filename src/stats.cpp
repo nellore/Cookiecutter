@@ -39,10 +39,10 @@ std::ostream & operator << (std::ostream & out, const Stats & stats)
             bad += it->second;
         }
     }
-    out << "\t" << "fraction\t" << (double)(stats.complete - bad)/stats.complete << std::endl;
+    out << "\t" << "% passed reads\t" << (double)(stats.complete - bad)/stats.complete * 100 << "%" << std::endl;
     if (stats.pe) {
-        out << "\t" << "se\t" << stats.se << std::endl;
-        out << "\t" << "pe\t" << stats.pe << std::endl;
+        out << "\t" << "single-end reads\t" << stats.se << std::endl;
+        out << "\t" << "paired-end reads\t" << stats.pe << std::endl;
     }
     return out;
 }
