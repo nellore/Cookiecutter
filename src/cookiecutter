@@ -18,7 +18,7 @@ from collections import defaultdict
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-program_names = dict(extractor='extractor',
+program_names = dict(extract='extract',
                      remove='remove',
                      rm_reads='rm_reads',
                      separate='separate')
@@ -182,13 +182,13 @@ class CookiecutterLauncher(ParallelLauncher):
                     self.args['-o']))
 
 
-class Extractor(CookiecutterLauncher):
+class Extract(CookiecutterLauncher):
     """
-    Launch the extractor tool.
+    Launch the extract tool.
     """
     def __init__(self, files, fragments, output, threads):
         """
-        Create the extractor tool launcher object.
+        Create the extract tool launcher object.
 
         :param files: a list of lists of input file names
         :param fragments: a name of a file with fragment k-mers
@@ -199,8 +199,8 @@ class Extractor(CookiecutterLauncher):
         :type output: str
         :type threads: int
         """
-        super(Extractor, self).__init__(
-            program_names['extractor'], files,
+        super(Extract, self).__init__(
+            program_names['extract'], files,
             dict(zip(('-f', '-o'), (fragments, output))),
             threads
         )
@@ -211,7 +211,7 @@ class Extractor(CookiecutterLauncher):
         """
         Check parameter values.
         """
-        super(Extractor, self).check_parameters()
+        super(Extract, self).check_parameters()
 
 
 class Remove(CookiecutterLauncher):
@@ -434,10 +434,10 @@ def cookiecutter():
                         help='print commands to be launched instead of '
                              'launching them')
 
-    # Parser for the extractor tool
+    # Parser for the extract tool
 
-    extractor_parser = subparsers.add_parser(
-        'extractor',
+    extract_parser = subparsers.add_parser(
+        'extract',
         description='Extracts reads according to a given list of '
                     'k-mers and outputs only the reads that matched '
                     'the list.',
@@ -445,35 +445,35 @@ def cookiecutter():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    extractor_required = extractor_parser.add_argument_group(
+    extract_required = extract_parser.add_argument_group(
         'required arguments')
 
-    extractor_io = extractor_required.add_mutually_exclusive_group(
+    extract_io = extract_required.add_mutually_exclusive_group(
         required=True
     )
-    extractor_io.add_argument('-i', '--input', nargs='+',
-                              default=argparse.SUPPRESS,
-                              help='a FASTQ file of single-end reads')
-    extractor_io.add_argument('-1', '--fastq1', nargs='+',
-                              default=argparse.SUPPRESS,
-                              help='a FASTQ file of the first '
-                                   'paired-end reads')
+    extract_io.add_argument('-i', '--input', nargs='+',
+                            default=argparse.SUPPRESS,
+                            help='a FASTQ file of single-end reads')
+    extract_io.add_argument('-1', '--fastq1', nargs='+',
+                            default=argparse.SUPPRESS,
+                            help='a FASTQ file of the first '
+                                 'paired-end reads')
 
-    extractor_parser.add_argument('-2', '--fastq2', nargs='+',
+    extract_parser.add_argument('-2', '--fastq2', nargs='+',
+                                default=argparse.SUPPRESS,
+                                help='a FASTQ file of the second '
+                                     'paired-end reads')
+    extract_parser.add_argument('-t', '--threads', type=int,
+                                default=1,
+                                help='the number of threads for '
+                                     'parallel processing of '
+                                     'multiple input files')
+    extract_required.add_argument('-f', '--fragments', required=True,
                                   default=argparse.SUPPRESS,
-                                  help='a FASTQ file of the second '
-                                       'paired-end reads')
-    extractor_parser.add_argument('-t', '--threads', type=int,
-                                  default=1,
-                                  help='the number of threads for '
-                                       'parallel processing of '
-                                       'multiple input files')
-    extractor_required.add_argument('-f', '--fragments', required=True,
-                                    default=argparse.SUPPRESS,
-                                    help='a file of k-mers')
-    extractor_required.add_argument('-o', '--output', required=True,
-                                    default=argparse.SUPPRESS,
-                                    help='a directory for output files')
+                                  help='a file of k-mers')
+    extract_required.add_argument('-o', '--output', required=True,
+                                  default=argparse.SUPPRESS,
+                                  help='a directory for output files')
 
     # Parser for the remove tool.
 
@@ -662,9 +662,9 @@ def cookiecutter():
             else:
                 raise CookiecutterError('different paired FASTQ file '
                                         'numbers')
-        if args.command == 'extractor':
-            launcher = Extractor(input_files, args.fragments,
-                                 args.output, args.threads)
+        if args.command == 'extract':
+            launcher = Extract(input_files, args.fragments,
+                               args.output, args.threads)
         elif args.command == 'remove':
             launcher = Remove(input_files, args.fragments,
                               args.output, args.threads)
@@ -688,12 +688,12 @@ def cookiecutter():
 if __name__ == '__main__':
     if not verify_binaries():
         message = 'Missing Cookiecutter binaries, please ' \
-            'install the program using \'make && make ' \
-            'install\' or launch it in the source ' \
-            'directory after running \'make\'. If you do not have ' \
-            'privileges to install to the system directory, you may ' \
-            'specify any other directory using PREFIX like ' \
-            '\'PREFIX=/my/dir make install\''
+                  'install the program using \'make && make ' \
+                  'install\' or launch it in the source ' \
+                  'directory after running \'make\'. If you do not have ' \
+                  'privileges to install to the system directory, you may ' \
+                  'specify any other directory using PREFIX like ' \
+                  '\'PREFIX=/my/dir make install\''
         sys.stderr.write('\n'.join(textwrap.wrap(message)) + '\n')
         sys.exit(1)
     try:

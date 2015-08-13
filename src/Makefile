@@ -4,7 +4,7 @@ PREFIX ?= /usr/local/bin
 
 OBJ = seq.o search.o stats.o fileroutines.o readroutines.o
 
-all: rm_reads extractor remove separate
+all: rm_reads extract remove separate
 
 fileroutines.o: fileroutines.h fileroutines.cpp
 	$(CXX) -c $(CXXFLAGS) fileroutines.cpp
@@ -24,8 +24,8 @@ stats.o: stats.h stats.cpp
 rm_reads: rm_reads.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o rm_reads rm_reads.cpp $(OBJ)
 
-extractor: extractor.cpp $(OBJ)
-	$(CXX) $(CXXFLAGS) -o extractor extractor.cpp $(OBJ)
+extract: extract.cpp $(OBJ)
+	$(CXX) $(CXXFLAGS) -o extract extract.cpp $(OBJ)
 
 remove: remove.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o remove remove.cpp $(OBJ)
@@ -36,19 +36,19 @@ separate: separate.cpp $(OBJ)
 .PHONY: install uninstall clean
 
 clean:
-	rm rm_reads extractor remove separate
+	rm rm_reads extract remove separate
 	rm *.o
 
 install:
 	cp rm_reads $(PREFIX)/rm_reads
 	cp separate $(PREFIX)/separate
-	cp extractor $(PREFIX)/extractor
+	cp extract $(PREFIX)/extract
 	cp remove $(PREFIX)/remove
 	cp cookiecutter $(PREFIX)/cookiecutter
 	chmod +x $(PREFIX)/cookiecutter 
 
 uninstall:
-	rm $(PREFIX)/rm_reads $(PREFIX)/extractor \
+	rm $(PREFIX)/rm_reads $(PREFIX)/extract \
 		$(PREFIX)/remove $(PREFIX)/separate \
 		$(PREFIX)/cookiecutter
 
