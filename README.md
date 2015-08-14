@@ -1,4 +1,4 @@
-# Cookiecutter: a k-mer based read filtration and extraction tool
+# Cookiecutter: a tool for kmer-based read filtering and extraction
 
 Cookiecutter is a computational tool for filtering reads by their 
 matches to specified k-mers. Originally it was created to
