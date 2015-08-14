@@ -138,7 +138,8 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cerr << "./separate [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
+    std::cerr << "Usage:" << std::endl;
+    std::cerr << "separate [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
 }
 
 /*! \brief The main function of the **rm_reads** tool. */

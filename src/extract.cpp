@@ -142,7 +142,8 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 /*! \brief Print program parameters */
 void print_help() 
 {
-    std::cerr << "./extractor [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat -e errors" << std::endl;
+    std::cerr << "Usage:" << std::endl;
+    std::cerr << "extract [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
 }
 
 /*! \brief The main function of the **extract** tool. */
@@ -176,9 +177,6 @@ int main(int argc, char ** argv)
             break;
         case 'o':
             out_dir = optarg;
-            break;
-        case 'e':
-            errors = std::atoi(optarg);
             break;
         case '?':
             print_help();
