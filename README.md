@@ -5,6 +5,9 @@ matches to specified k-mers. Originally it was created to
 filter reads with primers and adapters from large sets of sequencing 
 data.
 
+The preprint of the paper describing Cookiecutter is available on 
+[bioRxiv](http://biorxiv.org/content/early/2015/08/16/024679.article-info).
+
 ## Requirements
 
 To compile and use Cookiecutter, the following tools must be 
