@@ -1,18 +1,28 @@
-Description
-----------------------
+# Cookiecutter: a tool for kmer-based read filtering and extraction
 
-A tool for filtering reads by given kmers set. Initially created to filter reads with primers and adapters from large datasets.
+Cookiecutter is a computational tool for filtering reads by their 
+matches to specified k-mers. Originally it was created to
+filter reads with primers and adapters from large sets of sequencing 
+data.
 
-Requirements
-----------------------
+The preprint of the paper describing Cookiecutter is available on 
+[bioRxiv](http://biorxiv.org/content/early/2015/08/16/024679.article-info).
 
-- make
-- gcc 4.7 and higher
-- tested only on Linux/Unix and OS X operation systems
+## Requirements
 
+To compile and use Cookiecutter, the following tools must be 
+installed.
 
-Installation
-----------------------
+- make;
+- gcc 4.7 or higher;
+- python 2.7.
+
+Cookiecutter is designed for use on Linux/UNIX and OS X systems.
+
+## Installation
+
+The package should be compiled from its source code using the 
+provided Makefile in the following way.
 
 ```
 git clone http://github.com/ad3002/Cookiecutter.git
@@ -21,113 +31,151 @@ make
 sudo make install
 ```
 
-If you don't have root access you can use compiled tools from src folder or add src folder to your PATH variable.
-
-
-Usage for adapter removing
---------------------------
-
-./rm_reads <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments adapters.dat [-o output_dir --polyG 13 --length 50 --dust_cutoff cutoff --dust_k k -filterN]
-
-    -i              input file
-    -1              first input file for paired reads
-    -2              second input file for paired reads
-    -o              output directory (current directory by default)
-    --polyG, -p     length of polyG/polyC tails (13 by default)
-    --length, -l    minimum length cutoff (50 by default)
-    --fragments  file with adapter kmers
-    --dust_k, -k    window size for dust filter (not used by default)
-    --dust_cutoff, -c   cutoff by dust score (not used by default)
-    --errors, -e    maximum error count in match, possible values - 0, 1, 2 (0 by default)
-    --filterN, -N   allow filter by N's in reads
-
-Usage for reads removing by list with kmers
--------------------------------------------
-
-./remove <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
-
-    -i              input file
-    -1              first input file for paired reads
-    -2              second input file for paired reads
-    -o              output directory (current directory by default)
-    --fragments     file with kmers
-
-Usage for reads extraction by list with kmers
--------------------------------------------
-
-./extractor <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
-
-    -i              input file
-    -1              first input file for paired reads
-    -2              second input file for paired reads
-    -o              output directory (current directory by default)
-    --fragments     file with kmers
-
-Usage for reads separating into two groups by list with kmers
--------------------------------------------
-
-./separate <-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq> --fragments fragments.dat -o output_dir
-
-    -i              input file
-    -1              first input file for paired reads
-    -2              second input file for paired reads
-    -o              output directory (current directory by default)
-    --fragments     file with kmers
-
-
-Input files
---------------------
-
-Tools takes files with reads in fastq format as input. You can also use paired end reads. In case if you are using paired end reads, please, make sure that all reads from first file have correct pairs in second file.
-
-```sh
-run_batch.py -1 fastqA_1.fastq,fastqB_1.fastq -2 fastqA_2.fastq,fastqB_2.fastq -c remove --fragments fragments.dat -o filtered
-```
-
-Or with single end data:
-
-```sh
-run_batch_se.py -i fastqA.fastq,fastqB.fastq -c remove --fragments fragments.dat -o filtered
-```
-
-
-Creating  a kmer list from fasta file
--------------------------------------
-
-
-```sh
-make_library.py -i input_fasta.fa -o fragments.dat
-```
-
-
-Output files
---------------------
-
-Tool creates following files in output directory:
-
-
-1) file with correct reads (rm_reads, remove, separate)
+If you do not have root access, you can use Cookiecutter from the `src` 
+directory or specify another installation directory using `PREFIX`:
 
 ```
-input_prefix.ok.fastq       
+PREFIX=/my/dir make install
 ```
 
-2) file with reads, containing adapter kmers, N's, polyG/polyC tails or filtered by dust  (rm_reads, extractor separate)filter. Reason why read was filtered is given in the read id.
+To uninstall Cookiecutter, use `make uninstall`. If an installation 
+directory was specified using `PREFIX`, then it should also be 
+specified 
+for uninstalling: `PREFIX=/my/dir make uninstall`.
+
+## Usage
+
+Cookiecutter contains a number of subroutines for various tasks:
+
+- **remove** searches given k-mers in reads and outputs the reads 
+without any matches to the k-mers;
+
+- **rm_reads** is an extension of **remove** that additionally provides 
+options to filter reads by the presence of (C)n/(G)n tracks or 
+unknown nucleotides, read length or low sequence complexity and 
+outputs both filtered and unfiltered reads;
+
+- **extract** searches given k-mers in reads and outputs the reads that
+ matched the k-mers;
+ 
+- **separate** searches given k-mers in reads and outputs both matched 
+and unmatched reads to two separate files.
+
+These subroutines may be launched directly or using the wrapper script 
+**cookiecutter**. We recommend to use the wrapper because it allows to
+process multiple input files in parallel mode and provides a 
+convenient command-line interface to the subroutines. Also one may 
+create k-mer libraries from FASTA files using the **cookiecutter 
+make_library** tool.
+
+Below we give examples of Cookiecutter usage. To get more information 
+about the program options, use the `-h` argument: `cookiecutter -h`. 
+It can also be applied to a specific subroutine, for example 
+`cookiecutter rm_reads -h`.
+
+### Creating a library of k-mers
+
+A library of k-mers is necessary for all Cookiecutter subroutines. It 
+can be created from a FASTA file using `cookiecutter make_library`.
+For example, the command
 
 ```
-input_prefix.fitered.fastq  
+cookiecutter make_library -i adapters.fa -o adapters.txt -l 5
 ```
 
-3) for paired reads only. File with correct reads which have incorrect pair (rm_reads, separate).
+will create the file *adapters.txt* of k-mers of length 5 bp from the
+FASTA file *adapters.fa*.
+
+### Removing reads by k-mers
+
+Let us have a library of k-mers *adapters.txt* created as described 
+above and a FASTQ file of single-end reads *raw_data.fastq*, and we 
+would like to remove all reads containing any k-mers from the library.
+It can be done using **remove** in the following way.
 
 ```
-input_prefix.se.fastq       
+cookiecutter remove -i raw_data.fastq -f adapters.txt -o filtered
 ```
 
+The output FASTQ file *raw_data.ok.fastq* will be created in the 
+directory specified by the `-o` argument. It will contain the reads 
+that do not include any of the specified matches.
 
-Project page
---------------------
+### Extracting reads by k-mers
 
-Previous version of project can be found at https://github.com/allivi/rm_reads
+Let us have the same data set as in the
+subsection above, but now we are to extract the reads matching 
+any of the specified k-mers. For that, one should use **extract** in 
+the same way as **remove**:
 
-Last version of project can be found at https://github.com/ad3002/Cookiecutter
+```
+cookiecutter remove -i raw_data.fastq -f adapters.txt -o filtered
+```
+
+### Advanced read filtration
+
+Let us have two FASTQ files of paired-end reads *raw_data_1.fastq* 
+and *raw_data_2.fastq*. In addition to the k-mer presence filter, we 
+would also like to filter them by the following criteria: read length,
+presence of (G)n or (C)n tracks, sequence complexity (DUST) and
+unknown nucleotides within a read. The **rm_reads** tool was designed
+for such filtration.
+ 
+```
+cookiecutter rm_reads -1 raw_data_1.fastq -2 raw_data_2.fastq
+    -f adapters.txt -o output_dir --polygc 13 --length 50
+    --dust --filterN
+```
+
+Since we specified a pair of FASTQ files, the output files will also 
+be paired. Read pairs are maintained if both paired-end read parts 
+passed the filtration. If one part of a read passed the filtration but 
+another 
+failed it, then the passed part will be output to the file which 
+name ends with *.se.fastq*.
+
+### Read separation
+
+Let us have the same paired-end FASTQ files *raw_data_1.fastq* and
+*raw_data_2.fastq* as in the subsection above. We would like to 
+separate reads matching the k-mer library from reads that do not 
+match it. We will use the **separate** tool.
+
+```
+cookiecutter separate -1 raw_data_1.fastq -2 raw_data_2.fastq
+    -f adapters.txt -o output_dir
+```
+
+### Processing multiple input files
+
+Cookiecutter supports processing multiple input files (or pairs 
+of input FASTQ files for paired-end reads) in parallel mode. For 
+that, one should specify multiple input files in the arguments `-1`, 
+`-2` or `-i` (see examples below).
+
+```
+cookiecutter remove -1 reads_a_1.fastq reads_b_1.fastq
+    -2 reads_a_2.fastq reads_b_2.fastq -f adapters.txt
+    -o output_dir
+```
+
+```
+cookiecutter extract -i reads_a.fastq reads_b.fastq
+    -f adapters.txt -o output_dir
+```
+
+Also one may specify multiple input FASTA files for the k-mer library
+making tool.
+
+```
+cookiecutter make_library -i input_1.fa input_2.fa -o library.txt -l 5
+```
+
+## Repository and feedback
+
+The latest version of Cookiecutter is publicly available at 
+its [GitHub repository](https://github.com/ad3002/Cookiecutter). If 
+you find any bugs or have any suggestions how to improve the tool, 
+please find free to post issues at the repository. The earliest 
+version of Cookiecutter can also be found at
+[GitHub](https://github.com/allivi/rm_reads).
