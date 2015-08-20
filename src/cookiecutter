@@ -396,10 +396,11 @@ def create_kmer_file(fasta_names, output_name, kmer_length):
     kmers = defaultdict(int)
     for i in fasta_names:
         for header, sequence in sc_iter_fasta_brute(i):
-            sequence = sequence.upper()
-            sequence = re.sub("\s+", "", sequence, re.S | re.M)
+            sequence = sequence.strip().upper()
+            sequence = re.sub("\s+", "", sequence)
             for j in xrange(0, len(sequence)-kmer_length+1):
                 kmer = sequence[j:j+kmer_length]
+                assert len(kmer) == kmer_length
                 kmers[kmer] += 1
                 rkmer = get_revcomp(kmer)
                 kmers[rkmer] += 1
