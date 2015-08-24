@@ -433,19 +433,14 @@ def verify_binaries():
     Check if Cookiecutter binaries are present in the same directory
     that contains the wrapper script.
     """
-    for i in program_names.itervalues():
-        path = os.path.join(os.path.dirname(os.path.realpath(
-            __file__)), i)
+    wrapper_path = os.path.dirname(os.path.realpath(__file__))
+
+    for i in program_names.keys():
+        path = os.path.join(wrapper_path, program_names[i])
         if not os.path.isfile(path) or not os.access(path, os.X_OK):
             return False
-
-    wrapper_path = os.path.dirname(os.path.realpath(__file__))
-    # if binaries are present in the PATH directory, mofity the way
-    # they are called
-    for i in program_names.keys():
-        if not is_path_binary(program_names[i]):
-            program_names[i] = os.path.join(wrapper_path,
-                                            program_names[i])
+        else:
+            program_names[i] = path
 
     return True
 
