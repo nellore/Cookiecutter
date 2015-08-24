@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++0x -Wall -O2
 PREFIX ?= /usr/local/bin
 
-OBJ = seq.o search.o stats.o fileroutines.o readroutines.o
+OBJ = seq.o search.o stats.o fileroutines.o readroutines.o version.o
 
 all: rm_reads extract remove separate
 
@@ -20,6 +20,9 @@ search.o: search.h search.cpp
 
 stats.o: stats.h stats.cpp
 	$(CXX) -c $(CXXFLAGS) stats.cpp
+
+version.o: version.h version.cpp
+	$(CXX) -c $(CXXFLAGS) version.cpp
 
 rm_reads: rm_reads.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o rm_reads rm_reads.cpp $(OBJ)
