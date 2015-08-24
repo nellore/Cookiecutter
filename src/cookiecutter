@@ -409,6 +409,25 @@ def create_kmer_file(fasta_names, output_name, kmer_length):
             fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
 
 
+def is_path_binary(name):
+    """
+    Given a program name, check if its executable file is situated in
+    any PATH directory.
+
+    :param name: a name of a binary
+    :type name: str
+    :return: if the specified program is present in any PATH directory
+    :rtype: bool
+    """
+    for path in os.environ["PATH"].split(os.pathsep):
+        path = path.strip('"')
+        executable = os.path.join(path, name)
+        if os.path.isfile(executable) and os.access(executable,
+                                                    os.X_OK):
+            return True
+    return False
+
+
 def verify_binaries():
     """
     Check if Cookiecutter binaries are present in the same directory
@@ -419,6 +438,15 @@ def verify_binaries():
             __file__)), i)
         if not os.path.isfile(path) or not os.access(path, os.X_OK):
             return False
+
+    wrapper_path = os.path.dirname(os.path.realpath(__file__))
+    # if binaries are present in the PATH directory, mofity the way
+    # they are called
+    for i in program_names.keys():
+        if not is_path_binary(program_names[i]):
+            program_names[i] = os.path.join(wrapper_path,
+                                            program_names[i])
+
     return True
 
 
