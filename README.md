@@ -21,6 +21,24 @@ Cookiecutter is designed for use on Linux/UNIX and OS X systems.
 
 ## Installation
 
+You may install Cookiecutter from a binary package or compile it from
+source codes.
+
+### Binary package
+
+Unpack the downloaded archive using tar:
+
+```
+tar -xvzf cookiecutter_osx.tar.gz
+```
+
+Executable files are located in the `bin` subdirectory. You may 
+either launch Cookiecutter from the directory to which the archive was 
+unpacked or copy executable files to any directory specified in the 
+`PATH` variable of your environment.
+
+### Source codes
+
 The package should be compiled from its source code using the 
 provided Makefile in the following way.
 
