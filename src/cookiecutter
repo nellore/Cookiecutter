@@ -712,8 +712,11 @@ def cookiecutter():
 
 if __name__ == '__main__':
     if not verify_binaries():
-        message = 'Missing Cookiecutter binaries, please ' \
-                  'install the program using \'make && make ' \
+        message = 'Error: missing Cookiecutter binaries! If you use a ' \
+                  'binary package, please check that all executable ' \
+                  'files are in the same directory with ' \
+                  'cookiecutter. If you downloaded source codes, ' \
+                  'please install the program using \'make && make ' \
                   'install\' or launch it in the source ' \
                   'directory after running \'make\'. If you do not have ' \
                   'privileges to install to the system directory, you may ' \
