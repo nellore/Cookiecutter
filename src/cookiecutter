@@ -428,7 +428,8 @@ def cookiecutter():
     """
     parser = argparse.ArgumentParser(
         description='Cookiecutter: a kmer-based read filtration and '
-                    'extraction tool.')
+                    'extraction tool.',
+        version='1.0.0')
     subparsers = parser.add_subparsers(dest='command')
 
     parser.add_argument('-e', '--echo', action='store_true',
