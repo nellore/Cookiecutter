@@ -104,7 +104,7 @@ cookiecutter make_library -i adapters.fa -o adapters.txt -l 5
 will create the file *adapters.txt* of k-mers of length 5 bp from the
 FASTA file *adapters.fa*.
 
-If you are going to create a library from a large dataset or you have limited memory on your machine you can use ([Jellyfish 2](http://www.genome.umd.edu/jellyfish.html)) for the fast k-mer computation with following command:
+If you are going to create a library from a large dataset or you have limited memory on your machine you can use [Jellyfish 2](http://www.genome.umd.edu/jellyfish.html) for the fast k-mer computation with following command:
 
 ```
 jellyfish count -m 23 -s 2G -t 4 --text -o kmer_library.dat yourdata.fastq 
