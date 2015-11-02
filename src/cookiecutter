@@ -394,16 +394,21 @@ def create_kmer_file(fasta_names, output_name, kmer_length, error_rate=0):
     :type kmer_length: int
     """
     kmers = defaultdict(int)
-    for i in fasta_names:
-        for header, sequence in sc_iter_fasta_brute(i):
-            sequence = sequence.strip().upper()
-            sequence = re.sub("\s+", "", sequence)
-            for j in xrange(0, len(sequence)-kmer_length+1):
-                kmer = sequence[j:j+kmer_length]
-                assert len(kmer) == kmer_length
-                kmers[kmer] += 1
-                rkmer = get_revcomp(kmer)
-                kmers[rkmer] += 1
+    try:
+        for i in fasta_names:
+            for header, sequence in sc_iter_fasta_brute(i):
+                sequence = sequence.strip().upper()
+                sequence = re.sub("\s+", "", sequence)
+                for j in xrange(0, len(sequence)-kmer_length+1):
+                    kmer = sequence[j:j+kmer_length]
+                    assert len(kmer) == kmer_length
+                    kmers[kmer] += 1
+                    rkmer = get_revcomp(kmer)
+                    kmers[rkmer] += 1
+    except MemoryError:
+        print("Your dataset is too large, please, use Jellyfish, more https://github.com/ad3002/Cookiecutter#creating-a-library-of-k-mers")
+        sys.exit(12)
+
     with open(output_name, "w") as fh:
         for kmer in kmers:
             fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
