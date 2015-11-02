@@ -15,6 +15,7 @@
 #include "search.h"
 #include "stats.h"
 #include "seq.h"
+#include "version.h"
 
 /*! \brief Read adapter patterns from an input stream
  *
@@ -145,6 +146,7 @@ void print_help()
 {
     std::cerr << "Usage:" << std::endl;
     std::cerr << "rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
+	show_version();
 }
 
 /*! \brief The main function of the **rm_reads** tool. */

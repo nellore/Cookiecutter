@@ -30,12 +30,17 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--clear', action='store_true',
                         help='remove files created by the demo')
 
+    parser.add_argument('-e', '--executable', default='.',
+                        help='the path to the Cookiecutter executable '
+                             'file')
+
     args = parser.parse_args()
 
     fastq_file1 = args.fastq1
     fastq_file2 = args.fastq2
 
     data = {
+        "cookiecutter": os.path.join(args.executable, 'cookiecutter'),
         "fastq1": fastq_file1,
         "fastq2": fastq_file2,
         "output_dir_1a": "../demo/temp_results_remove",
@@ -54,16 +59,16 @@ if __name__ == '__main__':
                          e='removing alpha satDNA')
 
     command_launches = dict(
-        a='cookiecutter remove -1 %(fastq1)s -2 %(fastq2)s -o %('
+        a='%(cookiecutter)s remove -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1a)s --fragments ../data/illumina.dat',
-        b='cookiecutter rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
+        b='%(cookiecutter)s rm_reads -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1b)s --polygc 13 --length 50 --fragments '
           '../data/illumina.dat --dust_cutoff 3 --dust_k 4 --dust',
-        c='cookiecutter remove -i %(fastq1)s -o %('
+        c='%(cookiecutter)s remove -i %(fastq1)s -o %('
           'output_dir_1c)s --fragments ../data/rdna.dat',
-        d='cookiecutter extract -1 %(fastq1)s -2 %(fastq2)s -o %('
+        d='%(cookiecutter)s extract -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1d)s --fragments ../data/mtdna.dat',
-        e='cookiecutter separate -1 %(fastq1)s -2 %(fastq2)s -o %('
+        e='%(cookiecutter)s separate -1 %(fastq1)s -2 %(fastq2)s -o %('
           'output_dir_1e)s --fragments ../data/alpha.dat'
     )
 

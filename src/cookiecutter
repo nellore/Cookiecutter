@@ -409,16 +409,39 @@ def create_kmer_file(fasta_names, output_name, kmer_length, error_rate=0):
             fh.write("%s\t%s\n" % (kmer, kmers[kmer]))
 
 
+def is_path_binary(name):
+    """
+    Given a program name, check if its executable file is situated in
+    any PATH directory.
+
+    :param name: a name of a binary
+    :type name: str
+    :return: if the specified program is present in any PATH directory
+    :rtype: bool
+    """
+    for path in os.environ["PATH"].split(os.pathsep):
+        path = path.strip('"')
+        executable = os.path.join(path, name)
+        if os.path.isfile(executable) and os.access(executable,
+                                                    os.X_OK):
+            return True
+    return False
+
+
 def verify_binaries():
     """
     Check if Cookiecutter binaries are present in the same directory
     that contains the wrapper script.
     """
-    for i in program_names.itervalues():
-        path = os.path.join(os.path.dirname(os.path.realpath(
-            __file__)), i)
+    wrapper_path = os.path.dirname(os.path.realpath(__file__))
+
+    for i in program_names.keys():
+        path = os.path.join(wrapper_path, program_names[i])
         if not os.path.isfile(path) or not os.access(path, os.X_OK):
             return False
+        else:
+            program_names[i] = path
+
     return True
 
 
@@ -428,7 +451,8 @@ def cookiecutter():
     """
     parser = argparse.ArgumentParser(
         description='Cookiecutter: a kmer-based read filtration and '
-                    'extraction tool.')
+                    'extraction tool.',
+        version='1.0.0')
     subparsers = parser.add_subparsers(dest='command')
 
     parser.add_argument('-e', '--echo', action='store_true',
@@ -688,8 +712,11 @@ def cookiecutter():
 
 if __name__ == '__main__':
     if not verify_binaries():
-        message = 'Missing Cookiecutter binaries, please ' \
-                  'install the program using \'make && make ' \
+        message = 'Error: missing Cookiecutter binaries! If you use a ' \
+                  'binary package, please check that all executable ' \
+                  'files are in the same directory with ' \
+                  'cookiecutter. If you downloaded source codes, ' \
+                  'please install the program using \'make && make ' \
                   'install\' or launch it in the source ' \
                   'directory after running \'make\'. If you do not have ' \
                   'privileges to install to the system directory, you may ' \
