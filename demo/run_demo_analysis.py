@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--clear', action='store_true',
                         help='remove files created by the demo')
 
-    parser.add_argument('-e', '--executable', default='.',
+    parser.add_argument('-e', '--executable', default='',
                         help='the path to the Cookiecutter executable '
                              'file')
 
