@@ -61,6 +61,8 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofs
 {
     Seq read;
 
+    int processed = 0;
+
     while (read.read_seq(reads_f)) {
         ReadType type = check_read(read.seq, root, patterns, length, dust_k, dust_cutoff, errors);
         stats.update(type);
@@ -69,6 +71,10 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofs
         } else {
             read.update_id(type);
             read.write_seq(bad_f);
+        }
+        processed += 1;
+        if (processed && processed % 100000 == 0) {
+            std::cout << "Processed: " << processed << std::endl;
         }
     }
 }
