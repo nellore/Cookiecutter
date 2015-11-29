@@ -35,7 +35,7 @@ public:
      *  It does nothing except for initializing class members
      *  (Seq::id, Seq::seq and Seq::qual) with empty strings.
      */
-    Seq() : id(""), seq(""), qual("") {}
+    Seq() : seq("") {}
 
     /*! \brief Read a read from a FASTQ file
      *
@@ -46,13 +46,10 @@ public:
     bool read_seq(std::ifstream & fin)
     {
         std::string tmp;
-        std::getline(fin, id);
+        std::getline(fin, seq);
         if (!fin) {
             return false;
         }
-        std::getline(fin, seq);
-        std::getline(fin, tmp);
-        std::getline(fin, qual);
         return true;
     }
 
@@ -62,10 +59,7 @@ public:
      */
     void write_seq(std::ofstream & fout)
     {
-        fout << id << std::endl;
         fout << seq << std::endl;
-        fout << '+' << std::endl;
-        fout << qual << std::endl;
     }
 
     /*! \brief Add the read type to its ID
@@ -74,12 +68,10 @@ public:
      */
     void update_id(ReadType type)
     {
-        id.append(":"+get_type_name(type));
+        ;
     }
 
-    std::string id;     //!< the read ID
     std::string seq;    //!< the read sequence
-    std::string qual;   //!< the read quality sequence
 };
 
 #endif // SEQ_H
