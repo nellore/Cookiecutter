@@ -74,7 +74,7 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofs
         }
         processed += 1;
         if (processed && processed % 100000 == 0) {
-            std::cout << "Processed: " << processed << std::endl;
+            std::cerr << "Processed: " << processed << std::endl;
         }
     }
 }
