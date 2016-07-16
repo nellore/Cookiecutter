@@ -261,8 +261,6 @@ int main(int argc, char ** argv)
             return -1;
         }
 
-        }
-
         Stats stats1(reads1);
         Stats stats2(reads2);
 
