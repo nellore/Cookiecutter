@@ -33,6 +33,9 @@ extract: extract.cpp $(OBJ)
 remove: remove.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o remove remove.cpp $(OBJ)
 
+remove: counter.cpp $(OBJ)
+	$(CXX) $(CXXFLAGS) -o counter counter.cpp $(OBJ)
+
 separate: separate.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o separate separate.cpp $(OBJ)
 
@@ -47,11 +50,12 @@ install:
 	cp separate $(PREFIX)/separate
 	cp extract $(PREFIX)/extract
 	cp remove $(PREFIX)/remove
+	cp counter $(PREFIX)/counter
 	cp cookiecutter $(PREFIX)/cookiecutter
 	chmod +x $(PREFIX)/cookiecutter 
 
 uninstall:
 	rm $(PREFIX)/rm_reads $(PREFIX)/extract \
 		$(PREFIX)/remove $(PREFIX)/separate \
-		$(PREFIX)/cookiecutter
+		$(PREFIX)/cookiecutter $(PREFIX)/counter
 
