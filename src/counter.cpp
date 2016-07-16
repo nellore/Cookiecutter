@@ -64,7 +64,7 @@ void build_patterns(std::ifstream & kmers_f, int polyG, std::vector <std::pair <
  *  \param[in]  errors      the number of resolved mismatches between a read and
  *                          a pattern
  */
-void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofstream & bad_f,
+void filter_single_reads(std::ifstream & reads_f,
                          Stats & stats, Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
                          int length, int dust_k, int dust_cutoff, int errors)
 {
@@ -100,9 +100,6 @@ void filter_single_reads(std::ifstream & reads_f, std::ofstream & ok_f, std::ofs
  *  (or first) part was filtered but the other one was left.
  */
 void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
-                         std::ofstream & ok1_f, std::ofstream & ok2_f,
-                         std::ofstream & bad1_f, std::ofstream & bad2_f,
-                         std::ofstream & se1_f, std::ofstream & se2_f,
                          Stats & stats1, Stats & stats2,
                          Node * root, std::vector <std::pair<std::string, Node::Type> > const & patterns,
                          int length, int dust_k, int dust_cutoff, int errors)
@@ -127,7 +124,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 void print_help()
 {
     std::cerr << "Usage:" << std::endl;
-    std::cerr << "rm_reads [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
+    std::cerr << "counter [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --polyG 13 --length 50 --fragments fragments.dat --dust_cutoff cutoff --dust_k k" << std::endl;
     show_version();
 }
 
@@ -238,8 +235,6 @@ int main(int argc, char ** argv)
     if (!reads.empty()) {
         std::string reads_base = basename(reads);
         std::ifstream reads_f (reads.c_str());
-        std::ofstream ok_f((out_dir + "/" + reads_base + ".ok.fastq").c_str(), std::ofstream::out);
-        std::ofstream bad_f((out_dir + "/" + reads_base + ".filtered.fastq").c_str(), std::ofstream::out);
 
         if (!reads_f.good()) {
             std::cerr << "Cannot open reads file" << std::endl;
@@ -247,38 +242,18 @@ int main(int argc, char ** argv)
             return -1;
         }
 
-        if (!ok_f.good() || !bad_f.good()) {
-            std::cerr << "Cannot open output file" << std::endl;
-            print_help();
-            return -1;
-        }
-
         Stats stats(reads);
 
-        filter_single_reads(reads_f, ok_f, bad_f, stats, &root, patterns, length, dust_k, dust_cutoff, errors);
+        filter_single_reads(reads_f, stats, &root, patterns, length, dust_k, dust_cutoff, errors);
 
         std::cout << stats;
 
-        ok_f.close();
-        bad_f.close();
         reads_f.close();
     } else {
         std::string reads1_base = basename(reads1);
         std::string reads2_base = basename(reads2);
         std::ifstream reads1_f(reads1.c_str());
         std::ifstream reads2_f(reads2.c_str());
-        std::ofstream ok1_f((out_dir + "/" + reads1_base + ".ok.fastq").c_str(),
-                            std::ofstream::out);
-        std::ofstream ok2_f((out_dir + "/" + reads2_base + ".ok.fastq").c_str(),
-                            std::ofstream::out);
-        std::ofstream se1_f((out_dir + "/" + reads1_base + ".se.fastq").c_str(),
-                            std::ofstream::out);
-        std::ofstream se2_f((out_dir + "/" + reads2_base + ".se.fastq").c_str(),
-                            std::ofstream::out);
-        std::ofstream bad1_f((out_dir + "/" + reads1_base + ".filtered.fastq").c_str(),
-                             std::ofstream::out);
-        std::ofstream bad2_f((out_dir + "/" + reads2_base + ".filtered.fastq").c_str(),
-                             std::ofstream::out);
 
         if (!reads1_f.good() || !reads2_f.good()) {
             std::cerr << "reads file is bad" << std::endl;
@@ -286,28 +261,18 @@ int main(int argc, char ** argv)
             return -1;
         }
 
-        if (!ok1_f.good() || !ok2_f.good() || !bad1_f.good() || !bad2_f.good() ||
-            !se1_f.good() || !se2_f.good()) {
-            std::cerr << "out file is bad" << std::endl;
-            print_help();
-            return -1;
         }
 
         Stats stats1(reads1);
         Stats stats2(reads2);
 
-        filter_paired_reads(reads1_f, reads2_f, ok1_f, ok2_f,
-                            bad1_f, bad2_f, se1_f, se2_f,
+        filter_paired_reads(reads1_f, reads2_f,
                             stats1, stats2,
                             &root, patterns, length, dust_k, dust_cutoff, errors);
 
         std::cout << stats1;
         std::cout << stats2;
 
-        ok1_f.close();
-        ok2_f.close();
-        bad1_f.close();
-        bad2_f.close();
         reads1_f.close();
         reads2_f.close();
     }
