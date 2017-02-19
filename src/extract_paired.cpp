@@ -129,7 +129,7 @@ void filter_paired_reads(std::ifstream & reads1_f, std::ifstream & reads2_f,
 void print_help() 
 {
     std::cerr << "Usage:" << std::endl;
-    std::cerr << "extract [-i raw_data.fastq | -1 raw_data1.fastq -2 raw_data2.fastq] -o output_dir --fragments fragments.dat" << std::endl;
+    std::cerr << "extract_paired -1 raw_data1.fastq -2 raw_data2.fastq -o output_dir --fragments fragments.dat" << std::endl;
 	show_version();
 }
 
@@ -142,7 +142,7 @@ int main(int argc, char ** argv)
     std::string kmers, reads, out_dir;
     std::string reads1, reads2;
     char rez = 0;
-    int errors = 0;
+    int errors = 1;
     const struct option long_options[] = {
         {"fragments",required_argument,NULL,'f'},
         {NULL,0,NULL,0}
