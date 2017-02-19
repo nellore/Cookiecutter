@@ -4,7 +4,7 @@ PREFIX ?= /usr/local/bin
 
 OBJ = seq.o search.o stats.o fileroutines.o readroutines.o version.o
 
-all: rm_reads extract remove separate
+all: rm_reads extract extract_paired remove separate
 
 fileroutines.o: fileroutines.h fileroutines.cpp
 	$(CXX) -c $(CXXFLAGS) fileroutines.cpp
@@ -30,6 +30,9 @@ rm_reads: rm_reads.cpp $(OBJ)
 extract: extract.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o extract extract.cpp $(OBJ)
 
+extract_paired: extract_paired.cpp $(OBJ)
+	$(CXX) $(CXXFLAGS) -o extract_paired extract_paired.cpp $(OBJ)
+
 remove: remove.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) -o remove remove.cpp $(OBJ)
 
@@ -42,13 +45,14 @@ separate: separate.cpp $(OBJ)
 .PHONY: install uninstall clean
 
 clean:
-	rm rm_reads extract remove separate
+	rm rm_reads extract extract_paired remove separate
 	rm *.o
 
 install:
 	cp rm_reads $(PREFIX)/rm_reads
 	cp separate $(PREFIX)/separate
 	cp extract $(PREFIX)/extract
+	cp extract_paired $(PREFIX)/extract_paired
 	cp remove $(PREFIX)/remove
 	cp counter $(PREFIX)/counter
 	cp cookiecutter $(PREFIX)/cookiecutter
@@ -56,6 +60,7 @@ install:
 
 uninstall:
 	rm $(PREFIX)/rm_reads $(PREFIX)/extract \
+		$(PREFIX)/extract_paired \
 		$(PREFIX)/remove $(PREFIX)/separate \
 		$(PREFIX)/cookiecutter $(PREFIX)/counter
 
