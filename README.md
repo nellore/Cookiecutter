@@ -1,3 +1,5 @@
+Forked to hack this tool (in `extract_paired.cpp`) so if either mate 1 or mate 2 contains a kmer among the indexed kmers, they are written to output files.
+
 # Cookiecutter: a tool for kmer-based read filtering and extraction
 
 Cookiecutter is a computational tool for filtering reads by their 
